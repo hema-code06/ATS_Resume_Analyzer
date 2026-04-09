@@ -7,6 +7,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [aiFeedback, setAiFeedback] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const handleUpload = async () => {
     if (!file) return alert("Please upload a file!!");
@@ -30,11 +31,19 @@ function App() {
     }
   };
   const generateAI = async () => {
-    const res = await axios.post("http://127.0.0.1:8000/ai-feedback", {
-      text: result.resume_text,
-    });
+    try {
+      setAiLoading(true);
+      const res = await axios.post("http://127.0.0.1:8000/ai-feedback", {
+        text: result?.resume_text || "",
+      });
 
-    setAiFeedback(res.data.ai_feedback);
+      setAiFeedback(res.data.ai_feedback);
+    } catch (error) {
+      console.error(error);
+      alert("AI generation failed");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   return (
@@ -55,7 +64,6 @@ function App() {
       {result && (
         <div className="result-card">
           <h2>ATS Score</h2>
-
           <div className="progress-bar">
             <div
               className="progress"
@@ -63,17 +71,14 @@ function App() {
             ></div>
           </div>
           <p className="score-text">{result.ats_score}%</p>
-
           <div className="section">
             <h3>✅ Found Skills</h3>
             <p>{result.found_skills.join(", ")}</p>
           </div>
-
           <div className="section">
             <h3>❌ Missing Skills</h3>
             <p>{result.missing_skills.join(", ")}</p>
           </div>
-
           <div className="section">
             <h3>💡 Feedback</h3>
             <ul>
@@ -82,8 +87,10 @@ function App() {
               ))}
             </ul>
           </div>
-          <button onClick={generateAI}>Generate AI Feedback</button>
-          {aiFeedback && (
+          <button onClick={generateAI} disabled={!result || aiLoading}>
+            {aiLoading ? "Generating..." : "Generate AI Feedback"}
+          </button>
+          {aiFeedback && typeof aiFeedback === "string" && (
             <div className="section">
               <h3>🤖 AI Feedback</h3>
               <ul>

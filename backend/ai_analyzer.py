@@ -1,5 +1,9 @@
 from transformers import pipeline
-import re
+
+generator = pipeline(
+    "text-generation",
+    model="gpt2"
+)
 
 
 COMMON_SKILLS = [
@@ -55,15 +59,62 @@ def generate_basic_feedback(score, missing_skills, text):
 
     return feedback
 
-
 def generate_ai_feedback(text):
-    generator = pipeline(
-        "text2text-generation", model="google/flan-t5-small"
-    )
     try:
-        result = generator(...)
-        return result[0]["generated_text"]
-    except:
+        text = text[:500]  # limit input
+
+        prompt = f"""
+You are a resume expert.
+
+Give exactly 3 short bullet point suggestions to improve the resume.
+
+Do NOT repeat resume content.
+Keep each point under 10 words.
+
+Resume:
+{text}
+
+Suggestions:
+- 
+- 
+- 
+"""
+
+        result = generator(
+            prompt,
+            max_new_tokens=60,
+            num_return_sequences=1,
+            do_sample=True,
+            temperature=0.7
+        )
+
+        output = result[0]["generated_text"]
+
+        # Extract only generated part
+        if "Suggestions:" in output:
+            output = output.split("Suggestions:")[-1]
+
+        # Clean lines
+        lines = output.split("\n")
+
+        clean_lines = []
+        for line in lines:
+            line = line.strip()
+
+            if (
+                line.startswith("-")
+                and len(line) > 3
+                and not any(word in line.lower() for word in ["email", "linkedin", "github", "phone"])
+            ):
+                clean_lines.append(line)
+
+        # Ensure exactly 3 points
+        return "\n".join(clean_lines[:3]) if clean_lines else """- Add measurable achievements
+- Improve formatting
+- Include more relevant skills"""
+
+    except Exception as e:
+        print("AI ERROR:", str(e))
         return """- Add measurable achievements
 - Improve formatting
 - Include more relevant skills"""
