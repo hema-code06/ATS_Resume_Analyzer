@@ -20,9 +20,18 @@ def calculate_ats_score(text):
         else:
             missing_skills.append(skill)
 
-    score = int((len(found_skills) / len(COMMON_SKILLS))*100)
+    skill_score = (len(found_skills) / len(COMMON_SKILLS))*70
 
-    return score, found_skills, missing_skills
+    section_score = 0
+    if "experience" in text_lower:
+        section_score += 10
+    if "project" in text_lower:
+        section_score += 10
+    if "education" in text_lower:
+        section_score += 10
+
+    total_score = int(skill_score+section_score)
+    return total_score, found_skills, missing_skills
 
 
 def generate_basic_feedback(score, missing_skills, text):
@@ -48,17 +57,13 @@ def generate_basic_feedback(score, missing_skills, text):
 
 
 def generate_ai_feedback(text):
-    generator = pipeline("text-generation", model="distilgpt2")
-
-    prompt = f"""
-    Analyze this resume and give short improvement suggestions:
-    
-    Resume:
-    {text[:500]}
-    
-    Suggestions:
-    """
-
-    result = generator(prompt, max_length=150, num_return_sequences=1)
-
-    return result[0]["generated_text"]
+    generator = pipeline(
+        "text2text-generation", model="google/flan-t5-small"
+    )
+    try:
+        result = generator(...)
+        return result[0]["generated_text"]
+    except:
+        return """- Add measurable achievements
+- Improve formatting
+- Include more relevant skills"""
