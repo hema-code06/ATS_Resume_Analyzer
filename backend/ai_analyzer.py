@@ -1,4 +1,6 @@
+from transformers import pipeline
 import re
+
 
 COMMON_SKILLS = [
     "python", "java", "javascript", "react", "node", "express",
@@ -23,8 +25,9 @@ def calculate_ats_score(text):
     return score, found_skills, missing_skills
 
 
-def generate_feedback(score, missing_skills, text):
+def generate_basic_feedback(score, missing_skills, text):
     feedback = []
+
     if score > 75:
         feedback.append("Good ATS compatibility.")
     elif score > 50:
@@ -42,3 +45,20 @@ def generate_feedback(score, missing_skills, text):
         feedback.append(f"Missing skills:{', '.join(missing_skills[:5])}")
 
     return feedback
+
+
+def generate_ai_feedback(text):
+    generator = pipeline("text-generation", model="distilgpt2")
+
+    prompt = f"""
+    Analyze this resume and give short improvement suggestions:
+    
+    Resume:
+    {text[:500]}
+    
+    Suggestions:
+    """
+
+    result = generator(prompt, max_length=150, num_return_sequences=1)
+
+    return result[0]["generated_text"]

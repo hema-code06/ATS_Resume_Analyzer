@@ -56,10 +56,13 @@ function App() {
 
           <h3>Feedback:</h3>
           <ul>
-            {result.feedback.map((item, index) => (
+            {result.basic_feedback?.map((item, index) => (
               <li key={index}>{item}</li>
             ))}
           </ul>
+
+          <h3>AI Feedback:</h3>
+          <p>{result.ai_feedback}</p>
         </div>
       )}
     </div>
