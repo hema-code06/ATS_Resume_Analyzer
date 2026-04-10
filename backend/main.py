@@ -23,18 +23,39 @@ def home():
 
 @app.post("/upload")
 async def upload_resume(file: UploadFile = File(...)):
-    text = extract_resume_text(file.file, file.filename)
-    score, found_skills, missing_skills = calculate_ats_score(text)
-    basic_feedback = generate_basic_feedback(score, missing_skills, text)
+    try:
+        text = extract_resume_text(file.file, file.filename)
 
-    return {
-        "filename": file.filename,
-        "ats_score": score,
-        "found_skills": found_skills,
-        "missing_skills": missing_skills[:5],
-        "basic_feedback": basic_feedback,
-        "resume_text": text[:1000]
-    }
+        if not text:
+            return {
+                "error": "Failed to extract text from resume."
+            }
+
+        result = calculate_ats_score(text)
+        basic_feedback, color = generate_basic_feedback(result, text)
+
+        return {
+            "filename": file.filename,
+
+            "analysis": {
+                "ats_score": result["ats_score"],
+                "color": color,
+                "found_skills": result["found_skills"],
+                "missing_sections": result["missing_sections"],
+                "role_match": result["role_match"]
+            },
+
+            "feedback": {
+                "basic": basic_feedback
+            },
+
+            "resume_preview": text[:1000]
+        }
+    except Exception as e:
+        print("UPLOAD ERROR:", str(e))
+        return {
+            "error": "⚠️ Failed to process resume. Try again."
+        }
 
 
 @app.post("/ai-feedback")
@@ -45,10 +66,9 @@ async def ai_feedback(data: dict = Body(...)):
             return {
                 "ai_feedback": "No resume text provided."
             }
-        text = text[:500]
-        ai_feedback = generate_ai_feedback(text)
+        ai_feedback_result = generate_ai_feedback(text)
         return {
-            "ai_feedback": ai_feedback
+            "ai_feedback": ai_feedback_result
         }
     except Exception as e:
         print("AI ERROR:", str(e))
