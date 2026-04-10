@@ -1,0 +1,238 @@
+{
+  "skills": {
+    "programming_languages": {
+      "python": {
+        "keywords": ["python"],
+        "weight": 0.9
+      },
+      "java": {
+        "keywords": ["java"],
+        "weight": 0.8
+      },
+      "c++": {
+        "keywords": ["c++"],
+        "weight": 0.75
+      },
+      "javascript": {
+        "keywords": ["javascript", "js"],
+        "weight": 0.9
+      },
+      "go": {
+        "keywords": ["golang", "go"],
+        "weight": 0.7
+      },
+      "r": {
+        "keywords": ["r programming"],
+        "weight": 0.6
+      }
+    },
+
+    "web_development": {
+      "react": {
+        "keywords": ["react", "reactjs"],
+        "weight": 0.95
+      },
+      "angular": {
+        "keywords": ["angular"],
+        "weight": 0.8
+      },
+      "node_js": {
+        "keywords": ["node js", "nodejs"],
+        "weight": 0.9
+      },
+      "express_js": {
+        "keywords": ["express"],
+        "weight": 0.85
+      },
+      "html": {
+        "keywords": ["html"],
+        "weight": 0.7
+      },
+      "css": {
+        "keywords": ["css"],
+        "weight": 0.7
+      },
+      "rest_api": {
+        "keywords": ["rest api", "restful api"],
+        "weight": 0.9
+      }
+    },
+
+    "data_science_ai": {
+      "machine_learning": {
+        "keywords": ["machine learning", "ml"],
+        "weight": 0.95
+      },
+      "deep_learning": {
+        "keywords": ["deep learning", "dl"],
+        "weight": 0.95
+      },
+      "nlp": {
+        "keywords": ["natural language processing", "nlp"],
+        "weight": 0.9
+      },
+      "computer_vision": {
+        "keywords": ["computer vision"],
+        "weight": 0.9
+      },
+      "pandas": {
+        "keywords": ["pandas"],
+        "weight": 0.85
+      },
+      "numpy": {
+        "keywords": ["numpy"],
+        "weight": 0.85
+      },
+      "tensorflow": {
+        "keywords": ["tensorflow"],
+        "weight": 0.9
+      },
+      "pytorch": {
+        "keywords": ["pytorch"],
+        "weight": 0.9
+      },
+      "scikit_learn": {
+        "keywords": ["scikit", "scikit-learn"],
+        "weight": 0.85
+      }
+    },
+
+    "cybersecurity": {
+      "network_security": {
+        "keywords": ["network security"],
+        "weight": 0.85
+      },
+      "penetration_testing": {
+        "keywords": ["penetration testing", "pentesting"],
+        "weight": 0.9
+      },
+      "ethical_hacking": {
+        "keywords": ["ethical hacking"],
+        "weight": 0.9
+      },
+      "cryptography": {
+        "keywords": ["cryptography"],
+        "weight": 0.85
+      },
+      "siem": {
+        "keywords": ["siem"],
+        "weight": 0.8
+      },
+      "soc": {
+        "keywords": ["security operations center", "soc"],
+        "weight": 0.8
+      },
+      "vulnerability_assessment": {
+        "keywords": ["vulnerability assessment"],
+        "weight": 0.85
+      }
+    },
+
+    "cloud_devops": {
+      "aws": {
+        "keywords": ["aws", "amazon web services"],
+        "weight": 0.95
+      },
+      "azure": {
+        "keywords": ["azure"],
+        "weight": 0.9
+      },
+      "gcp": {
+        "keywords": ["google cloud", "gcp"],
+        "weight": 0.9
+      },
+      "docker": {
+        "keywords": ["docker"],
+        "weight": 0.95
+      },
+      "kubernetes": {
+        "keywords": ["kubernetes", "k8s"],
+        "weight": 0.95
+      },
+      "ci_cd": {
+        "keywords": ["ci cd", "continuous integration", "continuous deployment"],
+        "weight": 0.9
+      },
+      "terraform": {
+        "keywords": ["terraform"],
+        "weight": 0.9
+      }
+    },
+
+    "databases": {
+      "sql": {
+        "keywords": ["sql", "mysql", "postgresql"],
+        "weight": 0.9
+      },
+      "mongodb": {
+        "keywords": ["mongodb"],
+        "weight": 0.85
+      },
+      "redis": {
+        "keywords": ["redis"],
+        "weight": 0.8
+      }
+    },
+
+    "tools": {
+      "git": {
+        "keywords": ["git", "github"],
+        "weight": 0.9
+      },
+      "linux": {
+        "keywords": ["linux"],
+        "weight": 0.85
+      },
+      "jira": {
+        "keywords": ["jira"],
+        "weight": 0.7
+      }
+    }
+  },
+
+  "sections": {
+    "required": ["experience", "projects", "education", "skills"],
+    "optional": [
+      "summary",
+      "certifications",
+      "achievements",
+      "internships",
+      "publications"
+    ]
+  },
+
+  "roles": {
+    "frontend_developer": {
+      "skills": ["react", "javascript", "html", "css"],
+      "weight": 1.0
+    },
+    "backend_developer": {
+      "skills": ["python", "node_js", "sql"],
+      "weight": 1.0
+    },
+    "fullstack_developer": {
+      "skills": ["react", "node_js", "sql", "javascript"],
+      "weight": 1.2
+    },
+    "data_scientist": {
+      "skills": ["machine_learning", "pandas", "numpy"],
+      "weight": 1.1
+    },
+    "ai_engineer": {
+      "skills": ["deep_learning", "tensorflow", "pytorch"],
+      "weight": 1.2
+    },
+    "cybersecurity_analyst": {
+      "skills": ["network_security", "siem", "soc"],
+      "weight": 1.0
+    },
+    "cloud_engineer": {
+      "skills": ["aws", "docker", "kubernetes"],
+      "weight": 1.2
+    },
+    "devops_engineer": {
+      "skills": ["ci_cd", "docker", "terraform"],
+      "weight": 1.2
+    }
+  }
+}

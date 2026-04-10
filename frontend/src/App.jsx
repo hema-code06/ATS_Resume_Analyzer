@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import "./App.css";
+
+const getColor = (color) => {
+  if (color === "green") return "#22c55e";
+  if (color === "orange") return "#f59e0b";
+  return "#ef4444";
+};
 
 function App() {
   const [file, setFile] = useState(null);
@@ -9,11 +15,15 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
 
-  const handleUpload = async () => {
-    if (!file) return alert("Please upload a file!!");
+  const fileInputRef = useRef(null);
+
+  const handleUpload = async (selectedFile) => {
+    const fileToUpload = selectedFile || file;
+
+    if (!fileToUpload) return alert("Please upload a file!!");
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", fileToUpload);
 
     try {
       setLoading(true);
@@ -21,7 +31,6 @@ function App() {
         "http://127.0.0.1:8000/upload",
         formData,
       );
-
       setResult(response.data);
     } catch (error) {
       console.error(error);
@@ -30,13 +39,13 @@ function App() {
       setLoading(false);
     }
   };
+
   const generateAI = async () => {
     try {
       setAiLoading(true);
       const res = await axios.post("http://127.0.0.1:8000/ai-feedback", {
         text: result?.resume_text || "",
       });
-
       setAiFeedback(res.data.ai_feedback);
     } catch (error) {
       console.error(error);
@@ -47,59 +56,101 @@ function App() {
   };
 
   return (
-    <div className="container">
-      <h1>ATS Resume Analyzer</h1>
-      <div className="card">
-        <input
-          type="file"
-          accept=".pdf, .docx"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
+    <div className={`app ${result ? "active" : ""}`}>
+      <img src="/logo.png" alt="Logo" className="app-logo" />
 
-        <button onClick={handleUpload}>
-          {loading ? "Analyzing..." : "Upload & Analyze"}
-        </button>
+      <div className={`upload-wrapper ${result ? "moved" : ""}`}>
+        <div className="upload-card">
+          <p>Drop your resume here or choose a file. PDF & DOCX only.</p>
+          <input
+            type="file"
+            accept=".pdf,.docx"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const selectedFile = e.target.files[0];
+              setFile(selectedFile);
+
+              if (selectedFile) {
+                handleUpload(selectedFile);
+              }
+            }}
+          />
+
+          <button onClick={() => fileInputRef.current.click()}>
+            {loading ? "Analyzing..." : "Analyze your resume"}
+          </button>
+
+          {result && (
+            <div className="ats-box">
+              <h2>Your Score</h2>
+
+              <div className="circle-wrap">
+                <svg className="circle" viewBox="0 0 36 36">
+                  <path
+                    className="circle-bg"
+                    d="M18 2.0845
+             a 15.9155 15.9155 0 0 1 0 31.831
+             a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+
+                  <path
+                    className="circle-progress"
+                    strokeDasharray={`${result.ats_score}, 100`}
+                    d="M18 2.0845
+             a 15.9155 15.9155 0 0 1 0 31.831
+             a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                </svg>
+
+                <div className="circle-text">
+                  <span style={{ color: getColor(result.color) }}>
+                    {result.ats_score}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {result && (
-        <div className="result-card">
-          <h2>ATS Score</h2>
-          <div className="progress-bar">
-            <div
-              className="progress"
-              style={{ width: `${result.ats_score}%` }}
-            ></div>
-          </div>
-          <p className="score-text">{result.ats_score}%</p>
-          <div className="section">
-            <h3>✅ Found Skills</h3>
-            <p>{result.found_skills.join(", ")}</p>
-          </div>
-          <div className="section">
-            <h3>❌ Missing Skills</h3>
-            <p>{result.missing_skills.join(", ")}</p>
-          </div>
-          <div className="section">
-            <h3>💡 Feedback</h3>
-            <ul>
-              {result.basic_feedback?.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
-          </div>
-          <button onClick={generateAI} disabled={!result || aiLoading}>
-            {aiLoading ? "Generating..." : "Generate AI Feedback"}
-          </button>
-          {aiFeedback && typeof aiFeedback === "string" && (
+        <div className="right-panel">
+          <div className="result-card">
             <div className="section">
-              <h3>🤖 AI Feedback</h3>
+              <h3>✅ Found Skills</h3>
+              <p>{result.found_skills.join(", ")}</p>
+            </div>
+
+            <div className="section">
+              <h3>❌ Missing Skills</h3>
+              <p>{result.missing_skills.join(", ")}</p>
+            </div>
+
+            <div className="section">
+              <h3>💡 Feedback</h3>
               <ul>
-                {aiFeedback.split("\n").map((line, i) => (
-                  <li key={i}>{line}</li>
+                {result.basic_feedback?.map((item, i) => (
+                  <li key={i}>{item}</li>
                 ))}
               </ul>
             </div>
-          )}
+
+            <button onClick={generateAI}>
+              {aiLoading ? "Generating..." : "Generate AI Feedback"}
+            </button>
+
+            {aiFeedback && (
+              <div className="section fade-in">
+                <h3>🤖 AI Feedback</h3>
+                <ul>
+                  {aiFeedback.split("\n").map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

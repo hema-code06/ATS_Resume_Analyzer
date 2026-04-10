@@ -1,4 +1,9 @@
+import json
+import re
 from transformers import pipeline
+
+with open("skills_data.json", "r") as f:
+    CONFIG = json.load(f)
 
 generator = pipeline(
     "text-generation",
@@ -6,70 +11,117 @@ generator = pipeline(
 )
 
 
-COMMON_SKILLS = [
-    "python", "java", "javascript", "react", "node", "express",
-    "mongodb", "sql", "postgresql", "html", "css", "docker",
-    "fastapi", "django", "flask", "git", "rest api"
-]
+def extract_skills(text):
+    text_lower = text.lower()
+
+    found_skills = []
+    total_weight = 0
+
+    for category, skills in CONFIG["skills"].items():
+        for skill_name, skill_data in skills.items():
+            for keyword in skill_data["keywords"]:
+                if keyword in text_lower:
+                    found_skills[skill_name] = skill_data["weight"]
+                    total_weight += skill_data["weight"]
+                    break
+
+    return found_skills, total_weight
+
+
+def check_sections(text):
+    text_lower = text.lower()
+
+    found_sections = []
+    missing_sections = []
+
+    for section in CONFIG["sections"]["required"]:
+        if section in text_lower:
+            found_sections.append(section)
+        else:
+            missing_sections.append(section)
+
+    return found_sections, missing_sections
+
+
+def calculate_role_match(found_skills):
+    role_scores = {}
+
+    for role, data in CONFIG["roles"].items():
+        role_skill_count = len(data["skills"])
+        match_count = 0
+
+        for skill in data["skills"]:
+            if skill in found_skills:
+                match_count += 1
+
+        score = (match_count / role_skill_count) * 100
+        score *= data["weight"]
+
+        role_scores[role] = int(score)
+
+    return role_scores
 
 
 def calculate_ats_score(text):
-    text_lower = text.lower()
-    found_skills = []
-    missing_skills = []
+    found_skills, total_weight = extract_skills(text)
+    found_sections, missing_sections = check_sections(text)
 
-    for skill in COMMON_SKILLS:
-        if skill in text_lower:
-            found_skills.append(skill)
-        else:
-            missing_skills.append(skill)
+    max_possible_weight = sum(
+        skill["weight"]
+        for category in CONFIG["skills"].values()
+        for skill in category.values()
+    )
 
-    skill_score = (len(found_skills) / len(COMMON_SKILLS))*70
+    skill_score = (total_weight / max_possible_weight) * 70
+    section_score = (len(found_sections) /
+                     len(CONFIG["sections"]["required"])) * 30
 
-    section_score = 0
-    if "experience" in text_lower:
-        section_score += 10
-    if "project" in text_lower:
-        section_score += 10
-    if "education" in text_lower:
-        section_score += 10
+    total_score = int(skill_score + section_score)
 
-    total_score = int(skill_score+section_score)
-    return total_score, found_skills, missing_skills
+    role_scores = calculate_role_match(found_skills)
+
+    return {
+        "ats_score": total_score,
+        "found_skills": list(found_skills.keys()),
+        "missing_sections": missing_sections,
+        "role_match": role_scores
+    }
 
 
-def generate_basic_feedback(score, missing_skills, text):
+def generate_basic_feedback(result, text):
+    score = result["ats_score"]
     feedback = []
 
     if score > 75:
         feedback.append("Good ATS compatibility.")
+        color = "green"
     elif score > 50:
         feedback.append("Moderate ATS score. Improve skill coverage.")
+        color = "orange"
     else:
         feedback.append("Low ATS score. Add more relevant skills.")
+        color = "red"
 
-    if "project" not in text.lower():
-        feedback.append("Add projects experience section!!")
+    if result["missing_sections"]:
+        feedback.append(
+            f"Missing sections: {', '.join(result['missing_sections'])}")
 
-    if "experience" not in text.lower():
-        feedback.append("Consider adding work experience!!")
+    if len(result["found_skills"]) < 5:
+        feedback.append("Add more technical skills to improve ranking.")
 
-    if missing_skills:
-        feedback.append(f"Missing skills:{', '.join(missing_skills[:5])}")
+    return feedback, color
 
-    return feedback
 
 def generate_ai_feedback(text):
     try:
-        text = text[:500]  # limit input
+        text = text[:500]
 
         prompt = f"""
 You are a resume expert.
 
-Give exactly 3 short bullet point suggestions to improve the resume.
+Give exactly 3 short bullet point suggestions.
 
-Do NOT repeat resume content.
-Keep each point under 10 words.
+Keep each under 10 words.
 
 Resume:
 {text}
@@ -90,25 +142,18 @@ Suggestions:
 
         output = result[0]["generated_text"]
 
-        # Extract only generated part
         if "Suggestions:" in output:
             output = output.split("Suggestions:")[-1]
 
-        # Clean lines
         lines = output.split("\n")
 
         clean_lines = []
         for line in lines:
             line = line.strip()
 
-            if (
-                line.startswith("-")
-                and len(line) > 3
-                and not any(word in line.lower() for word in ["email", "linkedin", "github", "phone"])
-            ):
+            if line.startswith("-") and len(line) > 3:
                 clean_lines.append(line)
 
-        # Ensure exactly 3 points
         return "\n".join(clean_lines[:3]) if clean_lines else """- Add measurable achievements
 - Improve formatting
 - Include more relevant skills"""
