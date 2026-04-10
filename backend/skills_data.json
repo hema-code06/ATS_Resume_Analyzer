@@ -229,10 +229,6 @@
     "cloud_engineer": {
       "skills": ["aws", "docker", "kubernetes"],
       "weight": 1.2
-    },
-    "devops_engineer": {
-      "skills": ["ci_cd", "docker", "terraform"],
-      "weight": 1.2
     }
   }
 }

@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import axios from "axios";
 import "./App.css";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { MapPin } from "lucide-react";
 
 const getColor = (color) => {
   if (color === "green") return "#22c55e";
@@ -86,25 +88,24 @@ function App() {
             <div className="ats-box">
               <h2>Your Score</h2>
 
-              <div className="circle-wrap">
-                <svg className="circle" viewBox="0 0 36 36">
-                  <path
-                    className="circle-bg"
-                    d="M18 2.0845
-             a 15.9155 15.9155 0 0 1 0 31.831
-             a 15.9155 15.9155 0 0 1 0 -31.831"
+              <div className="score-bar-wrap">
+                <div className="score-bar-bg">
+                  <div
+                    className="score-bar-fill"
+                    style={{ width: `${result.analysis.ats_score}%` }}
                   />
 
-                  <path
-                    className="circle-progress"
-                    strokeDasharray={`${result.analysis.ats_score}, 100`}
-                    d="M18 2.0845
-             a 15.9155 15.9155 0 0 1 0 31.831
-             a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
+                  <div
+                    className="score-marker"
+                    style={{
+                      left: `calc(${result.analysis.ats_score}% - 10px)`,
+                    }}
+                  >
+                    <MapPin size={20} color="#ef4444" />
+                  </div>
+                </div>
 
-                <div className="circle-text">
+                <div className="score-label">
                   <span style={{ color: getColor(result.analysis.color) }}>
                     {result.analysis.ats_score}%
                   </span>
@@ -118,15 +119,22 @@ function App() {
       {result && (
         <div className="right-panel">
           <div className="result-card">
-            <div className="section">
-              <h3>✅ Found Skills</h3>
-              <p>
-                {Array.isArray(result?.analysis?.found_skills)
-                  ? result.analysis.found_skills.join(", ")
-                  : Object.keys(result?.analysis?.found_skills || {}).join(
-                      ", ",
-                    ) || "None"}
-              </p>
+            <div className="skills-container">
+              {(Array.isArray(result?.analysis?.found_skills)
+                ? result.analysis.found_skills
+                : Object.keys(result?.analysis?.found_skills || {})
+              ).length > 0 ? (
+                (Array.isArray(result?.analysis?.found_skills)
+                  ? result.analysis.found_skills
+                  : Object.keys(result?.analysis?.found_skills || {})
+                ).map((skill, i) => (
+                  <span key={i} className="skill-chip">
+                    {skill}
+                  </span>
+                ))
+              ) : (
+                <p className="empty-state">No skills detected</p>
+              )}
             </div>
 
             <div className="section">
@@ -138,14 +146,67 @@ function App() {
 
             <div className="section">
               <h3>🎯 Role Match</h3>
-              {Object.entries(result.analysis.role_match).map(
-                ([role, score]) => (
-                  <p key={role}>
-                    {role.replace("_", " ")}: <strong>{score}%</strong>
-                  </p>
-                ),
-              )}
+
+              <div style={{ width: "100%", height: 420 }}>
+                <ResponsiveContainer>
+                  <PieChart
+                    margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                  >
+                    <Pie
+                      data={Object.entries(result.analysis.role_match).map(
+                        ([role, score]) => ({
+                          name: role.replaceAll("_", " "),
+                          value: score,
+                        }),
+                      )}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      startAngle={90}
+                      endAngle={450}
+                      innerRadius={0}
+                      outerRadius={120}
+                      paddingAngle={2}
+                      isAnimationActive={true}
+                      label={({ name, percent }) =>
+                        `${name} ${(percent * 100).toFixed(0)}%`
+                      }
+                      labelLine={false}
+                    >
+                      {Object.entries(result.analysis.role_match).map(
+                        ([role, score], index) => {
+                          const maxScore = 100; 
+                          const sizeFactor = score / maxScore;
+
+                          return (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={
+                                score ===
+                                Math.max(
+                                  ...Object.values(result.analysis.role_match),
+                                )
+                                  ? "#111827"
+                                  : "#3b82f6"
+                              }
+                              opacity={score / 100}
+                              stroke="#0f172a"
+                              strokeWidth={1}
+                              style={{
+                                transform: `scale(${0.6 + sizeFactor * 0.8})`,
+                                transformOrigin: "center",
+                              }}
+                            />
+                          );
+                        },
+                      )}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
+
             <div className="section">
               <h3>💡 Feedback</h3>
               <ul>

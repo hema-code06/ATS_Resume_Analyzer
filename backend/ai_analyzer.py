@@ -30,11 +30,13 @@ def extract_skills(text):
 def check_sections(text):
     text_lower = text.lower()
 
+    required = CONFIG["sections"]["required"]
+
     found_sections = []
     missing_sections = []
 
-    for section in CONFIG["sections"]["required"]:
-        if section in text_lower:
+    for section in required:
+        if section.lower() in text_lower:
             found_sections.append(section)
         else:
             missing_sections.append(section)
