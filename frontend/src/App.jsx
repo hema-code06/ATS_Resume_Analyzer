@@ -32,6 +32,7 @@ function App() {
         formData,
       );
       setResult(response.data);
+      setAiFeedback("");
     } catch (error) {
       console.error(error);
       alert("Error uploading file!!");
@@ -44,7 +45,7 @@ function App() {
     try {
       setAiLoading(true);
       const res = await axios.post("http://127.0.0.1:8000/ai-feedback", {
-        text: result?.resume_text || "",
+        text: result?.resume_preview || "",
       });
       setAiFeedback(res.data.ai_feedback);
     } catch (error) {
@@ -96,7 +97,7 @@ function App() {
 
                   <path
                     className="circle-progress"
-                    strokeDasharray={`${result.ats_score}, 100`}
+                    strokeDasharray={`${result.analysis.ats_score}, 100`}
                     d="M18 2.0845
              a 15.9155 15.9155 0 0 1 0 31.831
              a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -104,8 +105,8 @@ function App() {
                 </svg>
 
                 <div className="circle-text">
-                  <span style={{ color: getColor(result.color) }}>
-                    {result.ats_score}%
+                  <span style={{ color: getColor(result.analysis.color) }}>
+                    {result.analysis.ats_score}%
                   </span>
                 </div>
               </div>
@@ -119,18 +120,36 @@ function App() {
           <div className="result-card">
             <div className="section">
               <h3>✅ Found Skills</h3>
-              <p>{result.found_skills.join(", ")}</p>
+              <p>
+                {Array.isArray(result?.analysis?.found_skills)
+                  ? result.analysis.found_skills.join(", ")
+                  : Object.keys(result?.analysis?.found_skills || {}).join(
+                      ", ",
+                    ) || "None"}
+              </p>
             </div>
 
             <div className="section">
-              <h3>❌ Missing Skills</h3>
-              <p>{result.missing_skills.join(", ")}</p>
+              <h3>📄 Missing Sections</h3>
+              <p>
+                {(result.analysis?.missing_sections || []).join(", ") || "None"}
+              </p>
             </div>
 
+            <div className="section">
+              <h3>🎯 Role Match</h3>
+              {Object.entries(result.analysis.role_match).map(
+                ([role, score]) => (
+                  <p key={role}>
+                    {role.replace("_", " ")}: <strong>{score}%</strong>
+                  </p>
+                ),
+              )}
+            </div>
             <div className="section">
               <h3>💡 Feedback</h3>
               <ul>
-                {result.basic_feedback?.map((item, i) => (
+                {result.feedback.basic?.map((item, i) => (
                   <li key={i}>{item}</li>
                 ))}
               </ul>

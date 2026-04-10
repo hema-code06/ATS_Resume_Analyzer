@@ -26,17 +26,11 @@ async def upload_resume(file: UploadFile = File(...)):
     try:
         text = extract_resume_text(file.file, file.filename)
 
-        if not text:
-            return {
-                "error": "Failed to extract text from resume."
-            }
-
         result = calculate_ats_score(text)
         basic_feedback, color = generate_basic_feedback(result, text)
 
         return {
             "filename": file.filename,
-
             "analysis": {
                 "ats_score": result["ats_score"],
                 "color": color,
@@ -44,17 +38,16 @@ async def upload_resume(file: UploadFile = File(...)):
                 "missing_sections": result["missing_sections"],
                 "role_match": result["role_match"]
             },
-
             "feedback": {
                 "basic": basic_feedback
             },
-
             "resume_preview": text[:1000]
         }
+
     except Exception as e:
         print("UPLOAD ERROR:", str(e))
         return {
-            "error": "⚠️ Failed to process resume. Try again."
+            "error": str(e)
         }
 
 

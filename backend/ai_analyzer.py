@@ -1,5 +1,4 @@
 import json
-import re
 from transformers import pipeline
 
 with open("skills_data.json", "r") as f:
@@ -14,7 +13,7 @@ generator = pipeline(
 def extract_skills(text):
     text_lower = text.lower()
 
-    found_skills = []
+    found_skills = {}
     total_weight = 0
 
     for category, skills in CONFIG["skills"].items():
@@ -82,7 +81,7 @@ def calculate_ats_score(text):
 
     return {
         "ats_score": total_score,
-        "found_skills": list(found_skills.keys()),
+        "found_skills": found_skills,
         "missing_sections": missing_sections,
         "role_match": role_scores
     }
