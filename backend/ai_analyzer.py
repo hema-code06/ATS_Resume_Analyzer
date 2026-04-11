@@ -27,55 +27,40 @@ def extract_skills(text):
     return found_skills, total_weight
 
 
-def check_sections(text):
-    text_lower = text.lower()
-
-    required = CONFIG["sections"]["required"]
-
-    found_sections = []
-    missing_sections = []
-
-    for section in required:
-        if section.lower() in text_lower:
-            found_sections.append(section)
-        else:
-            missing_sections.append(section)
-
-    return found_sections, missing_sections
-
-
 def calculate_role_match(found_skills):
     role_scores = {}
 
     for role, data in CONFIG["roles"].items():
-        role_skill_count = len(data["skills"])
-        match_count = 0
+        role_skills = data["skills"]
 
-        for skill in data["skills"]:
-            if skill in found_skills:
-                match_count += 1
+        if not role_skills:
+            role_scores[role] = 0
+            continue
 
-        score = (match_count / role_skill_count) * 100
-        score *= data["weight"]
+        match_count = sum(1 for skill in role_skills if skill in found_skills)
 
-        role_scores[role] = int(score)
+        score = (match_count / len(role_skills)) * 100
+        score *= data.get("weight", 1.0)
+
+        role_scores[role] = round(score, 2)
 
     return role_scores
 
 
 def calculate_ats_score(text):
     found_skills, total_weight = extract_skills(text)
-    found_sections, missing_sections = check_sections(text)
 
     max_possible_weight = sum(
-        skill["weight"]
+        skill_data["weight"]
         for category in CONFIG["skills"].values()
-        for skill in category.values()
+        for skill_data in category.values()
     )
 
+    if max_possible_weight == 0:
+        max_possible_weight = 1
+
     skill_score = (total_weight / max_possible_weight) * 70
-    section_score = (len(found_sections) /
-                     len(CONFIG["sections"]["required"])) * 30
+    section_score = 30
 
     total_score = int(skill_score + section_score)
 
@@ -84,12 +69,11 @@ def calculate_ats_score(text):
     return {
         "ats_score": total_score,
         "found_skills": found_skills,
-        "missing_sections": missing_sections,
         "role_match": role_scores
     }
 
 
-def generate_basic_feedback(result, text):
+def generate_basic_feedback(result):
     score = result["ats_score"]
     feedback = []
 
@@ -102,10 +86,6 @@ def generate_basic_feedback(result, text):
     else:
         feedback.append("Low ATS score. Add more relevant skills.")
         color = "red"
-
-    if result["missing_sections"]:
-        feedback.append(
-            f"Missing sections: {', '.join(result['missing_sections'])}")
 
     if len(result["found_skills"]) < 5:
         feedback.append("Add more technical skills to improve ranking.")
@@ -120,18 +100,14 @@ def generate_ai_feedback(text):
         prompt = f"""
 You are a resume expert.
 
-Give exactly 3 short bullet point suggestions.
-
-Keep each under 10 words.
+Give exactly 3 short bullet points.
+Each under 10 words.
 
 Resume:
 {text}
 
 Suggestions:
-- 
-- 
-- 
-"""
+- """
 
         result = generator(
             prompt,
@@ -146,21 +122,15 @@ Suggestions:
         if "Suggestions:" in output:
             output = output.split("Suggestions:")[-1]
 
-        lines = output.split("\n")
+        lines = [
+            line.strip()
+            for line in output.split("\n")
+            if line.strip().startswith("-")
+        ]
 
-        clean_lines = []
-        for line in lines:
-            line = line.strip()
-
-            if line.startswith("-") and len(line) > 3:
-                clean_lines.append(line)
-
-        return "\n".join(clean_lines[:3]) if clean_lines else """- Add measurable achievements
-- Improve formatting
-- Include more relevant skills"""
+        return "\n".join(lines[:3]) if lines else \
+            "- Add measurable achievements\n- Improve formatting\n- Add relevant skills"
 
     except Exception as e:
         print("AI ERROR:", str(e))
-        return """- Add measurable achievements
-- Improve formatting
-- Include more relevant skills"""
+        return "- Add measurable achievements\n- Improve formatting\n- Add relevant skills"
