@@ -4,7 +4,7 @@ import re
 
 
 def clean_text(text: str) -> str:
-    if not text:
+    if not isinstance(text, str):
         return ""
 
     text = text.lower()
@@ -14,35 +14,45 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-def extract_text_from_pdf(file):
-    text = ""
+def extract_text_from_pdf(file) -> str:
+    text_parts = []
+
     try:
         with pdfplumber.open(file) as pdf:
             for page in pdf.pages:
                 page_text = page.extract_text()
 
                 if page_text:
-                    text += page_text+"\n"
+                    text_parts.append(page_text)
+
     except Exception as e:
-        print("PDF ERROR:", str(e))
+        print(f"PDF ERROR:{e}")
+        return ""
 
-    return clean_text(text)
+    return clean_text("\n".join(text_parts))
 
 
-def extract_text_from_docx(file):
-    text = ""
+def extract_text_from_docx(file) -> str:
+    text_parts = []
+
     try:
         doc = docx.Document(file)
 
         for para in doc.paragraphs:
-            if para.text:
-                text += para.text+"\n"
+            if para.text and para.text.strip():
+                text_parts.append(para.text)
+
     except Exception as e:
-        print("DOCX ERROR:", str(e))
-    return clean_text(text)
+        print(f"DOCX ERROR: {e}")
+        return ""
+
+    return clean_text("\n".join(text_parts))
 
 
-def extract_resume_text(file, filename):
+def extract_resume_text(file, filename: str) -> str:
+    if not filename:
+        raise ValueError("Filename is required")
+
     filename = filename.lower()
 
     if filename.endswith(".pdf"):
@@ -52,4 +62,5 @@ def extract_resume_text(file, filename):
         return extract_text_from_docx(file)
 
     else:
-        raise ValueError("Unsupported file format. Upload PDF or DOCX only.")
+        raise ValueError(
+            "Unsupported file format. Only PDF and DOCX are allowed.")

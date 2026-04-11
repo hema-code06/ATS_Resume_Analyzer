@@ -1,234 +1,220 @@
 {
   "skills": {
     "programming_languages": {
-      "python": {
-        "keywords": ["python"],
-        "weight": 0.9
-      },
-      "java": {
-        "keywords": ["java"],
-        "weight": 0.8
-      },
-      "c++": {
-        "keywords": ["c++"],
-        "weight": 0.75
-      },
-      "javascript": {
-        "keywords": ["javascript", "js"],
-        "weight": 0.9
-      },
-      "go": {
-        "keywords": ["golang", "go"],
-        "weight": 0.7
-      },
-      "r": {
-        "keywords": ["r programming"],
-        "weight": 0.6
-      }
+      "python": ["python"],
+      "java": ["java"],
+      "c++": ["c++"],
+      "javascript": ["javascript", "js"],
+      "typescript": ["typescript"],
+      "go": ["golang", "go"],
+      "r": ["r programming"]
     },
 
     "web_development": {
-      "react": {
-        "keywords": ["react", "reactjs"],
-        "weight": 0.95
-      },
-      "angular": {
-        "keywords": ["angular"],
-        "weight": 0.8
-      },
-      "node_js": {
-        "keywords": ["node js", "nodejs"],
-        "weight": 0.9
-      },
-      "express_js": {
-        "keywords": ["express"],
-        "weight": 0.85
-      },
-      "html": {
-        "keywords": ["html"],
-        "weight": 0.7
-      },
-      "css": {
-        "keywords": ["css"],
-        "weight": 0.7
-      },
-      "rest_api": {
-        "keywords": ["rest api", "restful api"],
-        "weight": 0.9
-      }
+      "react": ["react", "reactjs"],
+      "angular": ["angular"],
+      "node_js": ["node js", "nodejs"],
+      "express_js": ["express"],
+      "html": ["html"],
+      "css": ["css"],
+      "rest_api": ["rest api", "restful api"],
+      "next_js": ["next js", "nextjs"]
     },
 
     "data_science_ai": {
-      "machine_learning": {
-        "keywords": ["machine learning", "ml"],
-        "weight": 0.95
-      },
-      "deep_learning": {
-        "keywords": ["deep learning", "dl"],
-        "weight": 0.95
-      },
-      "nlp": {
-        "keywords": ["natural language processing", "nlp"],
-        "weight": 0.9
-      },
-      "computer_vision": {
-        "keywords": ["computer vision"],
-        "weight": 0.9
-      },
-      "pandas": {
-        "keywords": ["pandas"],
-        "weight": 0.85
-      },
-      "numpy": {
-        "keywords": ["numpy"],
-        "weight": 0.85
-      },
-      "tensorflow": {
-        "keywords": ["tensorflow"],
-        "weight": 0.9
-      },
-      "pytorch": {
-        "keywords": ["pytorch"],
-        "weight": 0.9
-      },
-      "scikit_learn": {
-        "keywords": ["scikit", "scikit-learn"],
-        "weight": 0.85
-      }
+      "machine_learning": ["machine learning", "ml"],
+      "deep_learning": ["deep learning", "dl"],
+      "nlp": ["nlp", "natural language processing"],
+      "computer_vision": ["computer vision"],
+      "pandas": ["pandas"],
+      "numpy": ["numpy"],
+      "tensorflow": ["tensorflow"],
+      "pytorch": ["pytorch"],
+      "scikit_learn": ["scikit learn", "scikit-learn"],
+      "data_analysis": ["data analysis", "eda"]
     },
 
     "cybersecurity": {
-      "network_security": {
-        "keywords": ["network security"],
-        "weight": 0.85
-      },
-      "penetration_testing": {
-        "keywords": ["penetration testing", "pentesting"],
-        "weight": 0.9
-      },
-      "ethical_hacking": {
-        "keywords": ["ethical hacking"],
-        "weight": 0.9
-      },
-      "cryptography": {
-        "keywords": ["cryptography"],
-        "weight": 0.85
-      },
-      "siem": {
-        "keywords": ["siem"],
-        "weight": 0.8
-      },
-      "soc": {
-        "keywords": ["security operations center", "soc"],
-        "weight": 0.8
-      },
-      "vulnerability_assessment": {
-        "keywords": ["vulnerability assessment"],
-        "weight": 0.85
-      }
+      "network_security": ["network security"],
+      "penetration_testing": ["penetration testing", "pentesting"],
+      "ethical_hacking": ["ethical hacking"],
+      "cryptography": ["cryptography"],
+      "siem": ["siem"],
+      "soc": ["soc", "security operations center"],
+      "vulnerability_assessment": ["vulnerability assessment"],
+      "firewall": ["firewall"]
     },
 
     "cloud_devops": {
-      "aws": {
-        "keywords": ["aws", "amazon web services"],
-        "weight": 0.95
-      },
-      "azure": {
-        "keywords": ["azure"],
-        "weight": 0.9
-      },
-      "gcp": {
-        "keywords": ["google cloud", "gcp"],
-        "weight": 0.9
-      },
-      "docker": {
-        "keywords": ["docker"],
-        "weight": 0.95
-      },
-      "kubernetes": {
-        "keywords": ["kubernetes", "k8s"],
-        "weight": 0.95
-      },
-      "ci_cd": {
-        "keywords": ["ci cd", "continuous integration", "continuous deployment"],
-        "weight": 0.9
-      },
-      "terraform": {
-        "keywords": ["terraform"],
-        "weight": 0.9
-      }
+      "aws": ["aws", "amazon web services"],
+      "azure": ["azure"],
+      "gcp": ["gcp", "google cloud"],
+      "docker": ["docker"],
+      "kubernetes": ["kubernetes", "k8s"],
+      "ci_cd": ["ci cd", "cicd", "continuous integration", "continuous deployment"],
+      "terraform": ["terraform"],
+      "jenkins": ["jenkins"]
     },
 
     "databases": {
-      "sql": {
-        "keywords": ["sql", "mysql", "postgresql"],
-        "weight": 0.9
-      },
-      "mongodb": {
-        "keywords": ["mongodb"],
-        "weight": 0.85
-      },
-      "redis": {
-        "keywords": ["redis"],
-        "weight": 0.8
-      }
+      "sql": ["sql", "mysql", "postgresql"],
+      "mongodb": ["mongodb"],
+      "redis": ["redis"],
+      "nosql": ["nosql"]
     },
 
-    "tools": {
-      "git": {
-        "keywords": ["git", "github"],
-        "weight": 0.9
-      },
-      "linux": {
-        "keywords": ["linux"],
-        "weight": 0.85
-      },
-      "jira": {
-        "keywords": ["jira"],
-        "weight": 0.7
-      }
+    "mobile_development": {
+      "android": ["android", "kotlin", "java android"],
+      "ios": ["ios", "swift"],
+      "flutter": ["flutter", "dart"],
+      "react_native": ["react native"]
+    },
+
+    "product_management": {
+      "agile": ["agile", "scrum"],
+      "jira": ["jira"],
+      "roadmap_planning": ["roadmap"],
+      "user_stories": ["user stories"],
+      "market_research": ["market research"],
+      "analytics": ["product analytics"]
     }
   },
 
-  "sections": {
-    "required": ["experience", "projects", "education", "skills"],
-    "optional": [
-      "summary",
-      "certifications",
-      "achievements",
-      "internships",
-      "publications"
-    ]
-  },
-
   "roles": {
-    "frontend_developer": {
-      "skills": ["react", "javascript", "html", "css"],
-      "weight": 1.0
+    "software_engineer": {
+      "skills": [
+        "python",
+        "java",
+        "c++",
+        "javascript",
+        "git",
+        "sql",
+        "data_structures",
+        "algorithms",
+        "rest_api"
+      ]
     },
-    "backend_developer": {
-      "skills": ["python", "node_js", "sql"],
-      "weight": 1.0
-    },
-    "fullstack_developer": {
-      "skills": ["react", "node_js", "sql", "javascript"],
-      "weight": 1.2
-    },
+
     "data_scientist": {
-      "skills": ["machine_learning", "pandas", "numpy"],
-      "weight": 1.1
+      "skills": [
+        "python",
+        "machine_learning",
+        "deep_learning",
+        "pandas",
+        "numpy",
+        "scikit_learn",
+        "data_analysis",
+        "statistics",
+        "sql"
+      ]
     },
-    "ai_engineer": {
-      "skills": ["deep_learning", "tensorflow", "pytorch"],
-      "weight": 1.2
+
+    "devops_engineer": {
+      "skills": [
+        "linux",
+        "aws",
+        "azure",
+        "docker",
+        "kubernetes",
+        "ci_cd",
+        "terraform",
+        "jenkins",
+        "git"
+      ]
     },
-    "cybersecurity_analyst": {
-      "skills": ["network_security", "siem", "soc"],
-      "weight": 1.0
+
+    "machine_learning_engineer": {
+      "skills": [
+        "python",
+        "machine_learning",
+        "deep_learning",
+        "tensorflow",
+        "pytorch",
+        "scikit_learn",
+        "numpy",
+        "pandas"
+      ]
     },
+
     "cloud_engineer": {
-      "skills": ["aws", "docker", "kubernetes"],
-      "weight": 1.2
+      "skills": [
+        "aws",
+        "azure",
+        "gcp",
+        "docker",
+        "kubernetes",
+        "terraform",
+        "linux",
+        "networking"
+      ]
+    },
+
+    "cybersecurity_analyst": {
+      "skills": [
+        "network_security",
+        "penetration_testing",
+        "ethical_hacking",
+        "cryptography",
+        "siem",
+        "soc",
+        "firewall",
+        "vulnerability_assessment"
+      ]
+    },
+
+    "full_stack_developer": {
+      "skills": [
+        "html",
+        "css",
+        "javascript",
+        "react",
+        "node_js",
+        "express_js",
+        "sql",
+        "rest_api",
+        "git"
+      ]
+    },
+
+    "mobile_app_developer": {
+      "skills": [
+        "android",
+        "ios",
+        "flutter",
+        "react_native",
+        "java",
+        "kotlin",
+        "swift",
+        "rest_api"
+      ]
+    },
+
+    "data_engineer": {
+      "skills": [
+        "python",
+        "sql",
+        "spark",
+        "hadoop",
+        "etl",
+        "aws",
+        "gcp",
+        "databases",
+        "data_pipeline"
+      ]
+    },
+
+    "product_manager_tech": {
+      "skills": [
+        "agile",
+        "scrum",
+        "jira",
+        "roadmap_planning",
+        "market_research",
+        "user_stories",
+        "analytics",
+        "communication",
+        "sql"
+      ]
     }
   }
 }
