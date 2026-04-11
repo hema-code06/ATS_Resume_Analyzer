@@ -1,3 +1,4 @@
+import re
 import json
 from transformers import pipeline
 
@@ -6,7 +7,7 @@ with open("skills_data.json", "r") as f:
 
 generator = pipeline(
     "text-generation",
-    model="gpt2"
+    model="distilgpt2"
 )
 
 
@@ -18,10 +19,16 @@ def extract_skills(text):
 
     for category, skills in CONFIG["skills"].items():
         for skill_name, skill_data in skills.items():
-            for keyword in skill_data["keywords"]:
-                if keyword in text_lower:
-                    found_skills[skill_name] = skill_data["weight"]
-                    total_weight += skill_data["weight"]
+
+            keywords = skill_data
+            weight = 0.5
+
+            for keyword in keywords:
+                pattern = r'(?<!\w)' + re.escape(keyword.lower()) + r'(?!\w)'
+
+                if skill_name not in found_skills:
+                    found_skills[skill_name] = weight
+                    total_weight += weight
                     break
 
     return found_skills, total_weight
@@ -33,14 +40,11 @@ def calculate_role_match(found_skills):
     for role, data in CONFIG["roles"].items():
         role_skills = data["skills"]
 
-        if not role_skills:
-            role_scores[role] = 0
-            continue
-
-        match_count = sum(1 for skill in role_skills if skill in found_skills)
+        match_count = sum(
+            1 for skill in role_skills if skill in found_skills
+        )
 
         score = (match_count / len(role_skills)) * 100
-        score *= data.get("weight", 1.0)
 
         role_scores[role] = round(score, 2)
 
@@ -51,23 +55,22 @@ def calculate_ats_score(text):
     found_skills, total_weight = extract_skills(text)
 
     max_possible_weight = sum(
-        skill_data["weight"]
+        0.5
         for category in CONFIG["skills"].values()
-        for skill_data in category.values()
+        for _ in category.values()
     )
 
-    if max_possible_weight == 0:
-        max_possible_weight = 1
+    max_possible_weight = max(max_possible_weight, 1)
 
     skill_score = (total_weight / max_possible_weight) * 70
     section_score = 30
 
-    total_score = int(skill_score + section_score)
+    total_score = min(int(skill_score + section_score), 100)
 
     role_scores = calculate_role_match(found_skills)
 
     return {
-        "ats_score": total_score,
+        "ats_score": min(total_score, 100),
         "found_skills": found_skills,
         "role_match": role_scores
     }
@@ -100,14 +103,18 @@ def generate_ai_feedback(text):
         prompt = f"""
 You are a resume expert.
 
-Give exactly 3 short bullet points.
-Each under 10 words.
+Give exactly 3 short bullet point suggestions.
+
+Keep each under 10 words.
 
 Resume:
 {text}
 
 Suggestions:
-- """
+-
+-
+-
+"""
 
         result = generator(
             prompt,
