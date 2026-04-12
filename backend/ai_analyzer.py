@@ -1,143 +1,102 @@
 import re
 import json
-from transformers import pipeline
+from typing import Dict, List, Tuple
 
-with open("skills_data.json", "r") as f:
-    CONFIG = json.load(f)
-
-generator = pipeline(
-    "text-generation",
-    model="distilgpt2"
-)
+try:
+    with open("skills_data.json", "r") as f:
+        CONFIG = json.load(f)
+except Exception as e:
+    raise RuntimeError(f"Error loading config: {e}") from e
 
 
-def extract_skills(text):
+def extract_skills(text: str) -> Tuple[Dict[str, float], float]:
     text_lower = text.lower()
-
     found_skills = {}
-    total_weight = 0
+    total_weight = 0.0
 
-    for category, skills in CONFIG["skills"].items():
-        for skill_name, skill_data in skills.items():
-
-            keywords = skill_data
-            weight = 0.5
-
+    for category in CONFIG["skills"].values():
+        for skill_name, keywords in category.items():
             for keyword in keywords:
-                pattern = r'(?<!\w)' + re.escape(keyword.lower()) + r'(?!\w)'
+                pattern = rf"(?<!\w){re.escape(keyword.lower())}(?!\w)"
 
-                if skill_name not in found_skills:
-                    found_skills[skill_name] = weight
-                    total_weight += weight
+                if re.search(pattern, text):
+                    if skill_name not in found_skills:
+                        weight = 1.0
+                        found_skills[skill_name] = weight
+                        total_weight += weight
                     break
 
     return found_skills, total_weight
 
 
-def calculate_role_match(found_skills):
-    role_scores = {}
+def get_top_role_matches(found_skills: Dict[str, float], top_n: int = 3):
+    role_results = []
 
     for role, data in CONFIG["roles"].items():
-        role_skills = data["skills"]
+        role_skills = set(data["skills"])
+        found = role_skills.intersection(found_skills.keys())
+        missing = role_skills - found
 
-        match_count = sum(
-            1 for skill in role_skills if skill in found_skills
-        )
+        score = (len(found) / len(role_skills)) * 100
 
-        score = (match_count / len(role_skills)) * 100
+        role_results.append({
+            "role": role,
+            "match_percentage": round(score, 2),
+            "found_skills": sorted(list(found)),
+            "missing_skills": sorted(list(missing))
+        })
 
-        role_scores[role] = round(score, 2)
+    role_results.sort(key=lambda x: x["match_percentage"], reverse=True)
+    return role_results[:top_n]
 
-    return role_scores
 
-
-def calculate_ats_score(text):
+def calculate_ats_score(text: str):
     found_skills, total_weight = extract_skills(text)
 
-    max_possible_weight = sum(
-        0.5
-        for category in CONFIG["skills"].values()
-        for _ in category.values()
+    total_possible = sum(
+        1 for category in CONFIG["skills"].values()
+        for _ in category
     )
 
-    max_possible_weight = max(max_possible_weight, 1)
+    total_possible = max(total_possible, 1)
 
-    skill_score = (total_weight / max_possible_weight) * 70
+    skill_score = (total_weight / total_possible, 1) * 70
     section_score = 30
 
-    total_score = min(int(skill_score + section_score), 100)
-
-    role_scores = calculate_role_match(found_skills)
+    ats_score = min(int(skill_score+section_score), 100)
+    top_roles = get_top_role_matches(found_skills)
 
     return {
-        "ats_score": min(total_score, 100),
-        "found_skills": found_skills,
-        "role_match": role_scores
+        "ats_score": ats_score,
+        "total_skills_found": len(found_skills),
+        "found_skills": sorted(list(found_skills.keys())),
+        "top_roles": top_roles
     }
 
 
-def generate_basic_feedback(result):
+def generate_feedback(result: Dict):
     score = result["ats_score"]
-    feedback = []
 
-    if score > 75:
-        feedback.append("Good ATS compatibility.")
-        color = "green"
-    elif score > 50:
-        feedback.append("Moderate ATS score. Improve skill coverage.")
-        color = "orange"
+    if score >= 75:
+        level = "Strong"
+        message = "Great ATS compatibility. You're on track."
+    elif score >= 50:
+        level = "Moderate"
+        message = "Decent profile. Add more relevant skills."
     else:
-        feedback.append("Low ATS score. Add more relevant skills.")
-        color = "red"
+        level = "Low"
+        message = "Needs improvement. Focus on core skills."
 
-    if len(result["found_skills"]) < 5:
-        feedback.append("Add more technical skills to improve ranking.")
+    suggestions = []
 
-    return feedback, color
+    for role in result["top_roles"]:
+        if role["missing_skills"]:
+            suggestions.append(
+                f"For {role['role']}, consider adding: {', '.join(role['missing_skills'][:5])}"
+            )
 
-
-def generate_ai_feedback(text):
-    try:
-        text = text[:500]
-
-        prompt = f"""
-You are a resume expert.
-
-Give exactly 3 short bullet point suggestions.
-
-Keep each under 10 words.
-
-Resume:
-{text}
-
-Suggestions:
--
--
--
-"""
-
-        result = generator(
-            prompt,
-            max_new_tokens=60,
-            num_return_sequences=1,
-            do_sample=True,
-            temperature=0.7
-        )
-
-        output = result[0]["generated_text"]
-
-        if "Suggestions:" in output:
-            output = output.split("Suggestions:")[-1]
-
-        lines = [
-            line.strip()
-            for line in output.split("\n")
-            if line.strip().startswith("-")
-        ]
-
-        return "\n".join(lines[:3]) if lines else \
-            "- Add measurable achievements\n- Improve formatting\n- Add relevant skills"
-
-    except Exception as e:
-        print("AI ERROR:", str(e))
-        return "- Add measurable achievements\n- Improve formatting\n- Add relevant skills"
+    return {
+        "level": level,
+        "message": message,
+        "suggestions": suggestions[:3]
+    }
