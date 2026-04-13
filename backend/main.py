@@ -1,9 +1,9 @@
-from fastapi import FastAPI, UploadFile, File, Body, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from resume_parser import extract_resume_text
-from ai_analyzer import calculate_ats_score, generate_basic_feedback, generate_ai_feedback
+from ai_analyzer import calculate_ats_score, generate_feedback
 
-app = FastAPI()
+app = FastAPI(title="ATS Resume Analyzer API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,7 +15,7 @@ app.add_middleware(
 
 
 @app.get("/")
-def home():
+def health_check():
     return {
         "message": "ATS Resume Analyzer API running successfully.."
     }
@@ -23,57 +23,35 @@ def home():
 
 @app.post("/upload")
 async def upload_resume(file: UploadFile = File(...)):
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="File is required")
+
     try:
         text = extract_resume_text(file.file, file.filename)
 
+        if not text:
+            raise HTTPException(
+                status_code=400, detail="Could not extract text from file")
+
         result = calculate_ats_score(text)
-        basic_feedback, color = generate_basic_feedback(result)
+        feedback = generate_feedback(result)
 
         return {
             "filename": file.filename,
             "analysis": {
                 "ats_score": result["ats_score"],
-                "color": color,
+                "total_skills_found": result["total_skills_found"],
                 "found_skills": result["found_skills"],
-                "role_match": result["role_match"]
+                "top_roles": result["top_roles"]
             },
-            "feedback": {
-                "basic": basic_feedback
-            },
-            "resume_preview": text[:1000]
-        }
-
-    except Exception as e:
-        print("ATS ERROR:", str(e))
-        raise HTTPException(
-            status_code=500,
-            detail="ATS processing failed"
-        )
-
-
-@app.post("/ai-feedback")
-async def ai_feedback(data: dict = Body(...)):
-    try:
-        text = data.get("text", "")
-
-        if not text.strip():
-            raise HTTPException(
-                status_code=400,
-                detail="Resume text is required"
-            )
-
-        ai_feedback_result = generate_ai_feedback(text)
-
-        return {
-            "ai_feedback": ai_feedback_result
+            "feedback": feedback
         }
 
     except HTTPException:
         raise
 
     except Exception as e:
-        print("AI ERROR:", str(e))
         raise HTTPException(
             status_code=500,
-            detail="Failed to generate AI feedback"
+            detail=f"Resume processing failed: {str(e)}"
         )

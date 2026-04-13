@@ -60,7 +60,7 @@ def calculate_ats_score(text: str):
 
     total_possible = max(total_possible, 1)
 
-    skill_score = (total_weight / total_possible, 1) * 70
+    skill_score = (total_weight / total_possible) * 70
     section_score = 30
 
     ats_score = min(int(skill_score+section_score), 100)

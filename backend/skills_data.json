@@ -1,220 +1,214 @@
 {
-  "skills": {
-    "programming_languages": {
-      "python": ["python"],
-      "java": ["java"],
-      "c++": ["c++"],
-      "javascript": ["javascript", "js"],
-      "typescript": ["typescript"],
-      "go": ["golang", "go"],
-      "r": ["r programming"]
+  "roles": [
+    {
+      "role_name": "Frontend Developer",
+      "category": "Software Development",
+      "required_skills": ["HTML5", "CSS3", "JavaScript", "React.js", "Responsive Design", "Cross-browser Compatibility", "Git", "REST APIs", "Debugging", "Problem Solving"],
+      "optional_skills": ["TypeScript", "Next.js", "Redux", "Webpack", "Jest", "UI/UX Principles", "Figma", "SEO Basics", "Accessibility (WCAG)", "Performance Optimization"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
     },
-
-    "web_development": {
-      "react": ["react", "reactjs"],
-      "angular": ["angular"],
-      "node_js": ["node js", "nodejs"],
-      "express_js": ["express"],
-      "html": ["html"],
-      "css": ["css"],
-      "rest_api": ["rest api", "restful api"],
-      "next_js": ["next js", "nextjs"]
+    {
+      "role_name": "Backend Developer",
+      "category": "Software Development",
+      "required_skills": ["Node.js", "Python", "Java", "RESTful APIs", "Database Management", "SQL", "Authentication & Authorization", "Git", "System Design Basics", "Debugging"],
+      "optional_skills": ["GraphQL", "Docker", "Kubernetes", "Microservices Architecture", "AWS", "CI/CD", "Redis", "NoSQL", "Unit Testing", "Performance Tuning"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
     },
-
-    "data_science_ai": {
-      "machine_learning": ["machine learning", "ml"],
-      "deep_learning": ["deep learning", "dl"],
-      "nlp": ["nlp", "natural language processing"],
-      "computer_vision": ["computer vision"],
-      "pandas": ["pandas"],
-      "numpy": ["numpy"],
-      "tensorflow": ["tensorflow"],
-      "pytorch": ["pytorch"],
-      "scikit_learn": ["scikit learn", "scikit-learn"],
-      "data_analysis": ["data analysis", "eda"]
+    {
+      "role_name": "Full Stack Developer",
+      "category": "Software Development",
+      "required_skills": ["JavaScript", "React.js", "Node.js", "HTML", "CSS", "REST APIs", "SQL", "Git", "Problem Solving", "Debugging"],
+      "optional_skills": ["TypeScript", "Next.js", "MongoDB", "Docker", "AWS", "CI/CD", "GraphQL", "Testing Frameworks", "System Design", "Agile"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
     },
-
-    "cybersecurity": {
-      "network_security": ["network security"],
-      "penetration_testing": ["penetration testing", "pentesting"],
-      "ethical_hacking": ["ethical hacking"],
-      "cryptography": ["cryptography"],
-      "siem": ["siem"],
-      "soc": ["soc", "security operations center"],
-      "vulnerability_assessment": ["vulnerability assessment"],
-      "firewall": ["firewall"]
+    {
+      "role_name": "Mobile App Developer",
+      "category": "Software Development",
+      "required_skills": ["Flutter", "React Native", "Java/Kotlin", "Swift", "REST APIs", "Mobile UI Design", "Debugging", "Git", "Problem Solving", "App Deployment"],
+      "optional_skills": ["Firebase", "Push Notifications", "Unit Testing", "CI/CD", "App Store Optimization", "UX Principles", "GraphQL", "Performance Optimization", "Offline Storage", "Animations"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
     },
-
-    "cloud_devops": {
-      "aws": ["aws", "amazon web services"],
-      "azure": ["azure"],
-      "gcp": ["gcp", "google cloud"],
-      "docker": ["docker"],
-      "kubernetes": ["kubernetes", "k8s"],
-      "ci_cd": ["ci cd", "cicd", "continuous integration", "continuous deployment"],
-      "terraform": ["terraform"],
-      "jenkins": ["jenkins"]
+    {
+      "role_name": "DevOps Engineer",
+      "category": "Software Development",
+      "required_skills": ["Linux", "Docker", "Kubernetes", "CI/CD", "AWS/Azure", "Scripting (Bash/Python)", "Infrastructure as Code", "Monitoring Tools", "Git", "Problem Solving"],
+      "optional_skills": ["Terraform", "Ansible", "Prometheus", "Grafana", "Security Best Practices", "Cloud Architecture", "Networking", "Automation", "Logging Tools", "Cost Optimization"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
     },
-
-    "databases": {
-      "sql": ["sql", "mysql", "postgresql"],
-      "mongodb": ["mongodb"],
-      "redis": ["redis"],
-      "nosql": ["nosql"]
+    {
+      "role_name": "Data Analyst",
+      "category": "Data & Analytics",
+      "required_skills": ["SQL", "Excel", "Data Cleaning", "Data Visualization", "Power BI/Tableau", "Statistics Basics", "Python/R", "Analytical Thinking", "Communication", "Reporting"],
+      "optional_skills": ["Machine Learning Basics", "ETL Tools", "Data Warehousing", "A/B Testing", "Business Intelligence", "Dashboards", "Advanced Excel", "Storytelling", "Data Modeling", "APIs"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
     },
-
-    "mobile_development": {
-      "android": ["android", "kotlin", "java android"],
-      "ios": ["ios", "swift"],
-      "flutter": ["flutter", "dart"],
-      "react_native": ["react native"]
+    {
+      "role_name": "Data Scientist",
+      "category": "Data & Analytics",
+      "required_skills": ["Python", "Machine Learning", "Statistics", "Data Wrangling", "SQL", "Data Visualization", "Pandas", "Scikit-learn", "Problem Solving", "Communication"],
+      "optional_skills": ["Deep Learning", "TensorFlow", "NLP", "Big Data Tools", "Spark", "MLOps", "Cloud Platforms", "Feature Engineering", "Model Deployment", "Research Skills"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
     },
-
-    "product_management": {
-      "agile": ["agile", "scrum"],
-      "jira": ["jira"],
-      "roadmap_planning": ["roadmap"],
-      "user_stories": ["user stories"],
-      "market_research": ["market research"],
-      "analytics": ["product analytics"]
+    {
+      "role_name": "Business Analyst",
+      "category": "Data & Analytics",
+      "required_skills": ["Requirement Gathering", "Stakeholder Communication", "SQL", "Excel", "Business Process Modeling", "Data Analysis", "Documentation", "Problem Solving", "Reporting", "Critical Thinking"],
+      "optional_skills": ["Power BI", "Tableau", "Agile", "JIRA", "UML", "Process Improvement", "Domain Knowledge", "Presentation Skills", "Data Visualization", "Change Management"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "UI/UX Designer",
+      "category": "Design",
+      "required_skills": ["Figma", "User Research", "Wireframing", "Prototyping", "Usability Testing", "Design Thinking", "Interaction Design", "Visual Design", "Communication", "Problem Solving"],
+      "optional_skills": ["Adobe XD", "Sketch", "HTML/CSS Basics", "Accessibility", "Design Systems", "Animation", "User Flows", "A/B Testing", "Psychology Basics", "Collaboration"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Graphic Designer",
+      "category": "Design",
+      "required_skills": ["Adobe Photoshop", "Illustrator", "Typography", "Color Theory", "Layout Design", "Creativity", "Branding", "Visual Communication", "Attention to Detail", "Time Management"],
+      "optional_skills": ["After Effects", "InDesign", "UI Design Basics", "Motion Graphics", "Photography", "Social Media Design", "3D Design", "Print Design", "Storytelling", "Portfolio Development"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Product Designer",
+      "category": "Design",
+      "required_skills": ["Figma", "UX Research", "Prototyping", "User Flows", "Design Systems", "Visual Design", "Usability Testing", "Collaboration", "Problem Solving", "Communication"],
+      "optional_skills": ["HTML/CSS", "Animation", "Data-driven Design", "A/B Testing", "Accessibility", "Mobile Design", "Interaction Design", "Branding", "Agile", "Storytelling"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Digital Marketing Specialist",
+      "category": "Marketing",
+      "required_skills": ["SEO", "SEM", "Google Ads", "Analytics", "Content Strategy", "Social Media Marketing", "Email Marketing", "Campaign Management", "Communication", "Creativity"],
+      "optional_skills": ["Google Analytics", "Marketing Automation", "Copywriting", "A/B Testing", "CRM Tools", "Affiliate Marketing", "Branding", "Video Marketing", "Conversion Optimization", "Data Analysis"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Content Marketing Manager",
+      "category": "Marketing",
+      "required_skills": ["Content Strategy", "SEO Writing", "Copywriting", "Editorial Planning", "Analytics", "Storytelling", "Communication", "Brand Voice", "Research", "Creativity"],
+      "optional_skills": ["CMS Tools", "Email Marketing", "Social Media", "Video Content", "Content Distribution", "Keyword Research", "Automation Tools", "Blogging", "PR", "Design Basics"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "SEO Specialist",
+      "category": "Marketing",
+      "required_skills": ["Keyword Research", "On-page SEO", "Technical SEO", "Google Analytics", "Search Console", "Link Building", "Content Optimization", "Data Analysis", "Problem Solving", "Reporting"],
+      "optional_skills": ["Ahrefs", "SEMrush", "HTML Basics", "UX Knowledge", "Site Audits", "Local SEO", "Mobile SEO", "Competitor Analysis", "Schema Markup", "Automation"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Social Media Manager",
+      "category": "Marketing",
+      "required_skills": ["Content Creation", "Platform Management", "Analytics", "Copywriting", "Community Engagement", "Branding", "Creativity", "Scheduling Tools", "Communication", "Trend Analysis"],
+      "optional_skills": ["Paid Ads", "Video Editing", "Influencer Marketing", "Graphic Design", "Social Listening", "Campaign Strategy", "A/B Testing", "SEO Basics", "Crisis Management", "Automation Tools"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Product Manager",
+      "category": "Business",
+      "required_skills": ["Product Strategy", "Roadmapping", "Stakeholder Management", "Agile", "Market Research", "User Stories", "Communication", "Problem Solving", "Analytics", "Leadership"],
+      "optional_skills": ["SQL", "A/B Testing", "UX Knowledge", "Growth Strategy", "Scrum", "JIRA", "Technical Understanding", "Financial Modeling", "Customer Research", "Data Analysis"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Project Manager",
+      "category": "Business",
+      "required_skills": ["Project Planning", "Scheduling", "Risk Management", "Stakeholder Communication", "Budgeting", "Agile/Scrum", "Leadership", "Problem Solving", "Time Management", "Documentation"],
+      "optional_skills": ["PMP Certification", "JIRA", "MS Project", "Kanban", "Resource Management", "Conflict Resolution", "Process Improvement", "Reporting", "Change Management", "Tools Integration"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Business Development Executive",
+      "category": "Business",
+      "required_skills": ["Lead Generation", "Sales Strategy", "Negotiation", "Communication", "CRM Tools", "Market Research", "Relationship Building", "Presentation Skills", "Problem Solving", "Networking"],
+      "optional_skills": ["Digital Marketing", "Cold Calling", "Email Campaigns", "Analytics", "Customer Insights", "Brand Partnerships", "Sales Funnel Management", "Forecasting", "Public Speaking", "Closing Techniques"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Sales Executive",
+      "category": "Business",
+      "required_skills": ["Sales Techniques", "Negotiation", "CRM", "Lead Management", "Communication", "Customer Handling", "Closing Deals", "Product Knowledge", "Target Achievement", "Relationship Building"],
+      "optional_skills": ["Upselling", "Cross-selling", "Analytics", "Presentation Skills", "Email Marketing", "Cold Calling", "Pipeline Management", "Forecasting", "Networking", "Time Management"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Financial Analyst",
+      "category": "Finance",
+      "required_skills": ["Financial Modeling", "Excel", "Data Analysis", "Budgeting", "Forecasting", "Accounting Principles", "Reporting", "Attention to Detail", "Communication", "Problem Solving"],
+      "optional_skills": ["SQL", "Power BI", "Valuation Techniques", "Risk Analysis", "Investment Analysis", "Automation", "ERP Systems", "Business Acumen", "Presentation Skills", "Certifications (CFA)"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Accountant",
+      "category": "Finance",
+      "required_skills": ["Bookkeeping", "Financial Reporting", "Taxation", "Accounting Software", "Excel", "Attention to Detail", "Compliance", "Auditing Basics", "Time Management", "Problem Solving"],
+      "optional_skills": ["Tally", "SAP", "CPA Certification", "Payroll Management", "Cost Accounting", "GST Knowledge", "Financial Analysis", "Budgeting", "Risk Management", "Automation Tools"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "HR Manager",
+      "category": "HR",
+      "required_skills": ["Recruitment", "Employee Relations", "Performance Management", "HR Policies", "Communication", "Conflict Resolution", "Leadership", "Compliance", "Training & Development", "Problem Solving"],
+      "optional_skills": ["HRIS", "Payroll Systems", "Talent Management", "Employer Branding", "Analytics", "Labor Laws", "Onboarding", "Engagement Programs", "Coaching", "Diversity & Inclusion"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Recruiter",
+      "category": "HR",
+      "required_skills": ["Sourcing", "Screening", "Interviewing", "Communication", "ATS Tools", "Candidate Experience", "Negotiation", "Time Management", "Relationship Building", "Job Posting"],
+      "optional_skills": ["LinkedIn Recruiting", "Employer Branding", "HR Analytics", "Campus Hiring", "Diversity Hiring", "Networking", "CRM Tools", "Boolean Search", "Onboarding", "Reporting"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Operations Manager",
+      "category": "Operations",
+      "required_skills": ["Process Management", "Operations Strategy", "Leadership", "Budgeting", "Supply Chain Basics", "Problem Solving", "Communication", "Data Analysis", "Team Management", "Efficiency Optimization"],
+      "optional_skills": ["Lean Six Sigma", "ERP Systems", "Automation", "Risk Management", "Vendor Management", "Forecasting", "Inventory Management", "KPI Tracking", "Compliance", "Continuous Improvement"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Supply Chain Analyst",
+      "category": "Operations",
+      "required_skills": ["Supply Chain Management", "Data Analysis", "Inventory Management", "Forecasting", "Excel", "Logistics", "Problem Solving", "Communication", "Reporting", "Attention to Detail"],
+      "optional_skills": ["SAP", "ERP Systems", "SQL", "Demand Planning", "Procurement", "Risk Analysis", "Automation", "Analytics Tools", "Optimization", "Vendor Coordination"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Customer Support Executive",
+      "category": "Customer Success",
+      "required_skills": ["Customer Handling", "Communication", "Problem Solving", "CRM Tools", "Ticketing Systems", "Active Listening", "Time Management", "Product Knowledge", "Conflict Resolution", "Empathy"],
+      "optional_skills": ["Chat Support", "Email Support", "Technical Troubleshooting", "Upselling", "Multilingual Skills", "Knowledge Base Management", "Automation Tools", "Reporting", "Feedback Handling", "Call Center Tools"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Account Manager",
+      "category": "Customer Success",
+      "required_skills": ["Client Relationship Management", "Communication", "Negotiation", "Account Growth", "CRM Tools", "Problem Solving", "Presentation Skills", "Customer Retention", "Business Understanding", "Time Management"],
+      "optional_skills": ["Upselling", "Cross-selling", "Analytics", "Reporting", "Project Coordination", "Stakeholder Management", "Contract Management", "Forecasting", "Networking", "Strategic Planning"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Quality Assurance Engineer",
+      "category": "Software Development",
+      "required_skills": ["Manual Testing", "Test Case Design", "Bug Reporting", "Regression Testing", "JIRA", "Attention to Detail", "Problem Solving", "Communication"],
+      "optional_skills": ["Automation Testing", "Selenium", "API Testing", "Performance Testing", "SQL", "Python", "Postman", "CI/CD", "Agile", "TestRail"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Cybersecurity Analyst",
+      "category": "Software Development",
+      "required_skills": ["Network Security", "Threat Analysis", "Security Monitoring", "Incident Response", "Firewalls", "Vulnerability Assessment", "Analytical Thinking", "Problem Solving"],
+      "optional_skills": ["SIEM Tools", "Penetration Testing", "Security Certifications (CISSP/CEH)", "IDS/IPS", "Cloud Security", "Compliance", "Python", "Cryptography", "Risk Management", "Forensics"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
+    },
+    {
+      "role_name": "Machine Learning Engineer",
+      "category": "Data & Analytics",
+      "required_skills": ["Python", "Machine Learning", "Deep Learning", "TensorFlow", "PyTorch", "Model Deployment", "Data Preprocessing", "Problem Solving"],
+      "optional_skills": ["Scikit-learn", "Keras", "NLP", "Computer Vision", "MLOps", "Docker", "AWS/GCP", "Big Data (Spark)", "SQL", "Model Optimization"],
+      "experience_levels": ["Entry", "Mid", "Senior"]
     }
-  },
-
-  "roles": {
-    "software_engineer": {
-      "skills": [
-        "python",
-        "java",
-        "c++",
-        "javascript",
-        "git",
-        "sql",
-        "data_structures",
-        "algorithms",
-        "rest_api"
-      ]
-    },
-
-    "data_scientist": {
-      "skills": [
-        "python",
-        "machine_learning",
-        "deep_learning",
-        "pandas",
-        "numpy",
-        "scikit_learn",
-        "data_analysis",
-        "statistics",
-        "sql"
-      ]
-    },
-
-    "devops_engineer": {
-      "skills": [
-        "linux",
-        "aws",
-        "azure",
-        "docker",
-        "kubernetes",
-        "ci_cd",
-        "terraform",
-        "jenkins",
-        "git"
-      ]
-    },
-
-    "machine_learning_engineer": {
-      "skills": [
-        "python",
-        "machine_learning",
-        "deep_learning",
-        "tensorflow",
-        "pytorch",
-        "scikit_learn",
-        "numpy",
-        "pandas"
-      ]
-    },
-
-    "cloud_engineer": {
-      "skills": [
-        "aws",
-        "azure",
-        "gcp",
-        "docker",
-        "kubernetes",
-        "terraform",
-        "linux",
-        "networking"
-      ]
-    },
-
-    "cybersecurity_analyst": {
-      "skills": [
-        "network_security",
-        "penetration_testing",
-        "ethical_hacking",
-        "cryptography",
-        "siem",
-        "soc",
-        "firewall",
-        "vulnerability_assessment"
-      ]
-    },
-
-    "full_stack_developer": {
-      "skills": [
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "node_js",
-        "express_js",
-        "sql",
-        "rest_api",
-        "git"
-      ]
-    },
-
-    "mobile_app_developer": {
-      "skills": [
-        "android",
-        "ios",
-        "flutter",
-        "react_native",
-        "java",
-        "kotlin",
-        "swift",
-        "rest_api"
-      ]
-    },
-
-    "data_engineer": {
-      "skills": [
-        "python",
-        "sql",
-        "spark",
-        "hadoop",
-        "etl",
-        "aws",
-        "gcp",
-        "databases",
-        "data_pipeline"
-      ]
-    },
-
-    "product_manager_tech": {
-      "skills": [
-        "agile",
-        "scrum",
-        "jira",
-        "roadmap_planning",
-        "market_research",
-        "user_stories",
-        "analytics",
-        "communication",
-        "sql"
-      ]
-    }
-  }
+  ]
 }
