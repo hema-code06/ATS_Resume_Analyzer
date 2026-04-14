@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from resume_parser import extract_resume_text
-from ai_analyzer import calculate_ats_score, generate_feedback
+from ai_analyzer import analyze_resume
 
 app = FastAPI(title="ATS Resume Analyzer API")
 
@@ -31,10 +31,9 @@ async def upload_resume(file: UploadFile = File(...)):
 
         if not text:
             raise HTTPException(
-                status_code=400, detail="Could not extract text from file")
+                status_code=400, detail="Could not extract text from file!!")
 
-        result = calculate_ats_score(text)
-        feedback = generate_feedback(result)
+        result = analyze_resume(text)
 
         return {
             "filename": file.filename,
@@ -44,7 +43,7 @@ async def upload_resume(file: UploadFile = File(...)):
                 "found_skills": result["found_skills"],
                 "top_roles": result["top_roles"]
             },
-            "feedback": feedback
+            "feedback": result["feedback"]
         }
 
     except HTTPException:

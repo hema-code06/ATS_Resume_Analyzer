@@ -1,102 +1,166 @@
 import re
 import json
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
-try:
-    with open("skills_data.json", "r") as f:
-        CONFIG = json.load(f)
-except Exception as e:
-    raise RuntimeError(f"Error loading config: {e}") from e
+with open("skills_data.json", "r") as f:
+    CONFIG = json.load(f)
 
 
-def extract_skills(text: str) -> Tuple[Dict[str, float], float]:
-    text_lower = text.lower()
-    found_skills = {}
-    total_weight = 0.0
+def build_skill_map():
+    skill_map = {}
 
-    for category in CONFIG["skills"].values():
-        for skill_name, keywords in category.items():
-            for keyword in keywords:
-                pattern = rf"(?<!\w){re.escape(keyword.lower())}(?!\w)"
+    for role in CONFIG["jobRoles"]:
+        for skill in role["requiredSkills"] + role["preferredSkills"]:
+            canonical = skill.lower().strip()
 
-                if re.search(pattern, text):
-                    if skill_name not in found_skills:
-                        weight = 1.0
-                        found_skills[skill_name] = weight
-                        total_weight += weight
-                    break
+            skill_map[canonical] = canonical
 
-    return found_skills, total_weight
+            variations = CONFIG.get("skillVariations", {}).get(skill, [])
+            for v in variations:
+                skill_map[v.lower().strip()] = canonical
+
+    return skill_map
 
 
-def get_top_role_matches(found_skills: Dict[str, float], top_n: int = 3):
-    role_results = []
+def normalize_text(text: str) -> str:
+    text = text.lower()
+    text = re.sub(r"[^a-z0-9\s\+\#\.]", " ", text)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
 
-    for role, data in CONFIG["roles"].items():
-        role_skills = set(data["skills"])
-        found = role_skills.intersection(found_skills.keys())
-        missing = role_skills - found
 
-        score = (len(found) / len(role_skills)) * 100
+def normalize_skills(text: str) -> List[str]:
+    text = normalize_text(text)
+    skill_map = build_skill_map()
 
-        role_results.append({
-            "role": role,
-            "match_percentage": round(score, 2),
-            "found_skills": sorted(list(found)),
-            "missing_skills": sorted(list(missing))
+    detected = set()
+
+    for variant, canonical in skill_map.items():
+        if variant in text:
+            detected.add(canonical)
+
+    return sorted(list(detected))
+
+
+def calculate_role_match(found_skills: List[str]) -> List[Dict]:
+    weights = CONFIG["scoringWeights"]
+    results = []
+
+    found = set(found_skills)
+
+    for role in CONFIG["jobRoles"]:
+        required = set(s.lower() for s in role["requiredSkills"])
+        preferred = set(s.lower() for s in role["preferredSkills"])
+
+        req_match = required & found
+        pref_match = preferred & found
+
+        missing_req = required - found
+        missing_pref = preferred - found
+
+        req_score = (len(req_match) / len(required)) * 100 if required else 0
+        pref_score = (len(pref_match) / len(preferred)) * \
+            100 if preferred else 0
+
+        final_score = (
+            req_score * weights["requiredSkillMatch"] +
+            pref_score * weights["preferredSkillMatch"]
+        )
+
+        results.append({
+            "role_title": role["title"],
+            "match_percentage": round(final_score, 2),
+            "skills_you_have": sorted(req_match | pref_match),
+            "missing_required_skills": sorted(missing_req),
+            "missing_preferred_skills": sorted(missing_pref)
         })
 
-    role_results.sort(key=lambda x: x["match_percentage"], reverse=True)
-    return role_results[:top_n]
+    return sorted(results, key=lambda x: x["match_percentage"], reverse=True)[:3]
 
 
-def calculate_ats_score(text: str):
-    found_skills, total_weight = extract_skills(text)
+def calculate_ats_score(found_skills: List[str]) -> int:
+    found = set(found_skills)
 
-    total_possible = sum(
-        1 for category in CONFIG["skills"].values()
-        for _ in category
-    )
-
-    total_possible = max(total_possible, 1)
-
-    skill_score = (total_weight / total_possible) * 70
-    section_score = 30
-
-    ats_score = min(int(skill_score+section_score), 100)
-    top_roles = get_top_role_matches(found_skills)
-
-    return {
-        "ats_score": ats_score,
-        "total_skills_found": len(found_skills),
-        "found_skills": sorted(list(found_skills.keys())),
-        "top_roles": top_roles
+    HIGH_VALUE = {
+        "react", "node.js", "node", "express.js",
+        "mongodb", "postgresql", "sql",
+        "aws", "docker", "kubernetes",
+        "python", "java", "typescript"
     }
 
+    MEDIUM_VALUE = {
+        "redux", "git", "rest api", "rest apis", "restful apis",
+        "html", "css", "javascript", "sass", "jest",
+        "postman", "jenkins"
+    }
 
-def generate_feedback(result: Dict):
-    score = result["ats_score"]
+    LOW_VALUE = {
+        "linkedin", "r", "logging", "scheduling",
+        "networking", "onboarding"
+    }
 
-    if score >= 75:
-        level = "Strong"
-        message = "Great ATS compatibility. You're on track."
-    elif score >= 50:
-        level = "Moderate"
-        message = "Decent profile. Add more relevant skills."
+    score = 0
+
+    for skill in found:
+
+        if skill in HIGH_VALUE:
+            score += 6
+
+        elif skill in MEDIUM_VALUE:
+            score += 3
+
+        elif skill in LOW_VALUE:
+            score += 1
+
+        else:
+            score += 2
+    max_score = 100
+    normalized = min(int((score / 180) * 100), 100)
+
+    return normalized
+
+
+def generate_feedback(ats_score: int, top_roles: List[Dict]) -> Dict:
+    thresholds = CONFIG["matchingThresholds"]
+
+    if ats_score >= thresholds["excellent"]:
+        level = "Excellent"
+        message = "Your resume is highly ATS optimized."
+    elif ats_score >= thresholds["good"]:
+        level = "Good"
+        message = "Strong resume with minor improvements needed."
+    elif ats_score >= thresholds["fair"]:
+        level = "Fair"
+        message = "Average resume. Add missing core skills."
     else:
-        level = "Low"
-        message = "Needs improvement. Focus on core skills."
+        level = "Poor"
+        message = "Low ATS compatibility. Improve core skills."
 
     suggestions = []
 
-    for role in result["top_roles"]:
-        if role["missing_skills"]:
+    for role in top_roles:
+        if role["missing_required_skills"]:
             suggestions.append(
-                f"For {role['role']}, consider adding: {', '.join(role['missing_skills'][:5])}"
+                f"{role['role_title']}: Add {', '.join(role['missing_required_skills'][:5])}"
             )
 
     return {
         "level": level,
         "message": message,
         "suggestions": suggestions[:3]
+    }
+
+
+def analyze_resume(text: str) -> Dict:
+    found_skills = normalize_skills(text)
+    top_roles = calculate_role_match(found_skills)
+    ats_score = calculate_ats_score(found_skills)
+    feedback = generate_feedback(ats_score, top_roles)
+
+    return {
+        "ats_score": ats_score,
+        "total_skills_found": len(found_skills),
+        "found_skills": found_skills,
+        "top_roles": top_roles,
+        "feedback": feedback
     }
