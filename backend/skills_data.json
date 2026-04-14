@@ -1021,10 +1021,131 @@
       ]
     }
   ],
+  "skillValueMap": {
+  "HIGH": [
+    "react", "node.js", "express.js", "mongodb", "postgresql", "sql",
+    "aws", "docker", "kubernetes", "python", "java", "typescript",
+    "machine learning", "deep learning", "tensorflow", "pytorch", "tailwind css",
+    "material-ui","jwt","authentication","authorization","sass","redux",
+
+    "data analysis", "data visualization", "statistics",
+    "tableau", "power bi", "predictive modeling",
+
+    "seo", "sem", "google analytics",
+    "content marketing", "campaign management",
+    "conversion optimization",
+
+    "financial modeling", "forecasting", "valuation",
+    "financial reporting", "investment analysis",
+
+    "ui/ux", "figma", "user research", "prototyping",
+    "design systems", "interaction design",
+
+    "negotiation", "closing", "lead generation",
+    "client relationship management",
+
+    "recruitment", "talent acquisition",
+    "employee relations", "performance management",
+
+    "patient care", "clinical skills", "emergency response",
+
+    "curriculum development", "student assessment", "teaching",
+
+    "operations management", "process improvement",
+    "supply chain management",
+
+    "legal research", "contract drafting", "compliance",
+
+    "project planning", "risk management",
+    "stakeholder management", "agile", "scrum",
+
+    "video editing", "motion graphics", "storytelling",
+
+    "scientific research", "experimental design",
+    "hypothesis testing",
+    "system design", "distributed systems",
+    "cloud architecture", "microservices",
+    "devops", "ci/cd pipelines",
+    "api development", "backend architecture",
+    "data engineering", "etl pipelines",
+    "cybersecurity", "penetration testing",
+    "network security", "security engineering",
+    "blockchain development",
+    "mobile app development",
+    "cross-platform development",
+    "performance optimization",
+    "scalability engineering"
+  ],
+
+  "MEDIUM": [
+    "redux", "git", "rest api", "rest apis", "restful apis",
+    "html", "css", "javascript", "sass", "jest",
+    "postman", "jenkins", "ci/cd", "testing",
+
+    "excel", "data cleaning", "reporting", "dashboards",
+
+    "social media marketing", "email marketing",
+    "copywriting", "a/b testing",
+
+    "budgeting", "variance analysis", "accounting",
+
+    "photoshop", "illustrator", "wireframing",
+
+    "crm software", "sales presentations", "prospecting",
+
+    "onboarding", "hr policies", "training",
+
+    "medical terminology", "documentation",
+
+    "lesson planning", "classroom management",
+
+    "inventory management", "vendor coordination",
+
+    "legal writing", "document review",
+
+    "jira", "resource allocation",
+
+    "adobe premiere pro", "after effects",
+
+    "literature review", "report writing",
+    "unit testing", "integration testing",
+    "api testing", "automation testing",
+    "responsive design",
+    "cross-browser testing",
+    "data visualization tools",
+    "basic shell scripting",
+    "linux basics",
+    "version control workflows",
+    "agile workflows",
+    "kanban",
+    "scrum ceremonies",
+    "basic networking",
+    "system debugging"
+  ],
+
+  "LOW": [
+    "linkedin", "networking", "scheduling",
+    "documentation", "filing", "data entry",
+    "onboarding", "logging", "basic research",
+    "calendar management", "meeting coordination",
+    "ms office", "word", "powerpoint",
+    "r",
+    "email handling",
+    "file organization",
+    "basic reporting",
+    "meeting notes",
+    "simple excel formulas",
+    "copy paste tasks",
+    "data labeling",
+    "form filling",
+    "admin support",
+    "basic communication tasks"
+  ]
+},
   "skillVariations": {
     "React": ["ReactJS", "React.js", "React JS", "react", "Reactjs"],
     "JavaScript": ["JS", "Javascript", "ECMAScript", "ES6", "ES2015"],
-    "TypeScript": ["TS", "Typescript"],
+    "TypeScript": ["TS", "Typescript", "typescript"],
     "HTML": ["HTML5", "html"],
     "CSS": ["CSS3", "css", "Cascading Style Sheets"],
     "Node.js": ["NodeJS", "Node", "node.js", "node"],
@@ -1041,7 +1162,11 @@
     "Adobe Photoshop": ["Photoshop", "PS", "photoshop"],
     "Adobe Illustrator": ["Illustrator", "AI", "illustrator"],
     "Microsoft Excel": ["Excel", "MS Excel", "excel"],
-    "SQL": ["sql", "Structured Query Language", "MySQL", "MSSQL"]
+    "SQL": ["sql", "Structured Query Language", "MySQL", "MSSQL"],
+    "Material-UI": ["MaterialUI", "MUI", "material-ui", "material ui", "materialui"],
+    "Tailwind CSS": ["Tailwind", "tailwind", "tailwindcss", "Tailwind CSS"],
+    "Sass": ["SCSS", "sass", "scss"],
+    "JWT": ["jwt", "JSON Web Token", "json web token"]
   },
   "scoringWeights": {
     "requiredSkillMatch": 0.6,
@@ -1056,3 +1181,4 @@
     "poor": 40
   }
 }
+
