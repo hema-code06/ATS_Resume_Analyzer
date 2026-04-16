@@ -161,60 +161,20 @@ def generate_smart_insights(ats_score: int, top_roles: List[Dict], found_skills:
     if ats_score >= thresholds["excellent"]:
         level = "Excellent"
         emoji = "🎉"
-        message = "Outstanding! Your resume is highly ATS-optimized with strong skill coverage."
     elif ats_score >= thresholds["good"]:
         level = "Good"
         emoji = "✅"
-        message = "Strong resume! Adding a few key skills will make it excellent."
     elif ats_score >= thresholds["fair"]:
         level = "Fair"
         emoji = "⚠️"
-        message = "Decent foundation. Focus on adding high-value technical skills."
     else:
         level = "Poor"
         emoji = "❌"
-        message = "Needs improvement. Strengthen your core technical skillset."
-
-    suggestions = []
-    for i, role in enumerate(top_roles, 1):
-        role_tips = []
-
-        if role["missing_required_skills"]:
-            critical = ", ".join(role["missing_required_skills"][:3])
-            role_tips.append(f"Critical: Add {critical}")
-
-        if role["required_match_rate"] < 50:
-            role_tips.append(
-                f"Only {role['required_match_rate']}% required skills matched")
-
-        suggestion = f"{role['role_title']} ({role['match_percentage']}%): {' | '.join(role_tips)}"
-        suggestions.append(suggestion)
-
-    insights = []
-
-    if len(high_skills) < 10:
-        insights.append(
-            f"💡 Add more high-value skills (currently {len(high_skills)}). Focus on cloud (AWS), system design, or advanced frameworks.")
-
-    if top_roles[0]["match_percentage"] < 60:
-        insights.append(
-            f"🎯 Your best match is only {top_roles[0]['match_percentage']}%. Consider specializing in {top_roles[0]['role_title']} skills.")
-
-    common_missing = set(top_roles[0]["all_missing_skills"])
-    for role in top_roles[1:]:
-        common_missing &= set(role["all_missing_skills"])
-
-    if common_missing:
-        insights.append(
-            f"🔑 High-impact additions: {', '.join(list(common_missing)[:3])} (needed across multiple roles)")
 
     return {
         "level": level,
         "emoji": emoji,
-        "message": message,
         "ats_score": ats_score,
-        "suggestions": suggestions,
-        "insights": insights,
         "skill_breakdown": {
             "high_value_count": len(high_skills),
             "medium_value_count": len(medium_skills),
