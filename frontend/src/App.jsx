@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import UploadPage from "./pages/UploadPage";
 import ResultsPage from "./pages/ResultsPage";
@@ -7,6 +7,10 @@ function App() {
   const [currentPage, setCurrentPage] = useState("upload");
   const [analysisData, setAnalysisData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    fetch("https://ats-resume-analyzer-pgjt.onrender.com/");
+  }, []);
 
   const handleUpload = async (file) => {
     if (!file) return;
