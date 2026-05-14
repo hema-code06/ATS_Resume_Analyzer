@@ -8,6 +8,33 @@ const scoreMeta = (s) => {
   return { label: "Poor", color: "#dc2626" };
 };
 
+function SkillTagList({ skills, className }) {
+  const LIMIT = 5;
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? skills : skills.slice(0, LIMIT);
+  const hidden = skills.length - LIMIT;
+
+  return (
+    <div className="rp-tag-row">
+      {visible.map((s, i) => (
+        <span key={i} className={`rp-tag ${className}`}>{s}</span>
+      ))}
+      {!expanded && hidden > 0 && (
+        <button className="rp-tag rp-tag--more rp-tag-more-btn"
+          onClick={() => setExpanded(true)}>
+          +{hidden} more
+        </button>
+      )}
+      {expanded && hidden > 0 && (
+        <button className="rp-tag rp-tag--more rp-tag-more-btn"
+          onClick={() => setExpanded(false)}>
+          Show less
+        </button>
+      )}
+    </div>
+  );
+}
+
 function AnimatedBar({ value, color, delay = 0 }) {
   const [width, setWidth] = useState(0);
   useEffect(() => {
@@ -178,16 +205,7 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
                   You Have
                   <span className="rp-sbt-cnt">{role.total_matched_skills}</span>
                 </p>
-                <div className="rp-tag-row">
-                  {role.skills_you_have.map((s, i) => (
-                    <span key={i} className="rp-tag rp-tag--green">{s}</span>
-                  ))}
-                  {role.total_matched_skills > role.skills_you_have.length && (
-                    <span className="rp-tag rp-tag--more">
-                      +{role.total_matched_skills - role.skills_you_have.length} more
-                    </span>
-                  )}
-                </div>
+                <SkillTagList skills={role.skills_you_have} className="rp-tag--green" />
               </div>
             )}
 
@@ -200,11 +218,7 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
                   Missing Required
                   <span className="rp-sbt-cnt">{role.missing_required_skills.length}</span>
                 </p>
-                <div className="rp-tag-row">
-                  {role.missing_required_skills.map((s, i) => (
-                    <span key={i} className="rp-tag rp-tag--red">{s}</span>
-                  ))}
-                </div>
+                <SkillTagList skills={role.missing_required_skills} className="rp-tag--red" />
               </div>
             )}
 
@@ -217,11 +231,7 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
                   Missing Preferred
                   <span className="rp-sbt-cnt">{role.missing_preferred_skills.length}</span>
                 </p>
-                <div className="rp-tag-row">
-                  {role.missing_preferred_skills.map((s, i) => (
-                    <span key={i} className="rp-tag rp-tag--amber">{s}</span>
-                  ))}
-                </div>
+                <SkillTagList skills={role.missing_preferred_skills} className="rp-tag--amber" />
               </div>
             )}
           </div>

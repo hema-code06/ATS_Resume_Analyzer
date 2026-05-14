@@ -29,7 +29,7 @@ const UploadPage = ({ onUpload, isLoading }) => {
   };
 
   return (
-    <div>
+    <div className="up">
       <h1 className='up-headline'>
         Get Clear Insight, Into Your Skills.
       </h1>
