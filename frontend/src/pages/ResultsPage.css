@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 .rp {
-  min-height: 100vh;
   background: linear-gradient(
     135deg,
     rgb(191, 191, 254) 0%,
@@ -162,7 +161,7 @@
   background: white;
   border: 2px solid #e5e7eb;
   border-radius: 35px;
-  padding: 35px;
+  padding: 30px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   animation: rp-fade-up 0.35s ease both;
 }
@@ -403,30 +402,147 @@
   color: #9ca3af;
 }
 
-
-
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .rp-bar {
-    padding: 12px 16px;
-    flex-wrap: wrap;
-    gap: 10px;
+    padding: 12px 20px;
+    gap: 12px;
   }
 
-  .rp-bar-score-track { width: 100px; }
-  .rp-bar-file        { font-size: 0.78rem; }
+  .rp-bar-score-track {
+    width: 140px;
+  }
+
+  .rp-bar-score-label {
+    display: none;
+  }
 
   .rp-body {
-    padding: 24px 14px 48px;
+    padding: 20px 16px 40px;
   }
 
   .rp-card {
-    padding: 22px 18px;
+    padding: 24px 20px;
+    border-radius: 24px;
+  }
+
+  .rp-role-tabs {
+    justify-content: center;
+  }
+
+  .rp-overview {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .rp-role-name {
+    font-size: 1.15rem;
+  }
+
+  .rp-match-circle {
+    width: 84px;
+    height: 84px;
+  }
+
+  .rp-skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .rp-rate-lbl {
+    width: 110px;
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rp-bar {
+    padding: 10px 14px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .rp-bar-file span {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  .rp-bar-score {
+    gap: 6px;
+  }
+
+  .rp-bar-score-track {
+    width: 90px;
+  }
+
+  .rp-bar-score-num {
+    font-size: 1.1rem;
+  }
+
+  .rp-bar-btn {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+    gap: 5px;
+  }
+
+  .rp-body {
+    padding: 16px 12px 36px;
+  }
+
+  .rp-card {
+    padding: 18px 14px;
     border-radius: 20px;
   }
 
-  .rp-role-name     { font-size: 1.25rem; }
-  .rp-match-circle  { width: 80px; height: 80px; }
-  .rp-mc-pct        { font-size: 1.1rem; }
-  .rp-rate-lbl      { width: 100px; font-size: 0.76rem; }
-  .rp-skills-grid   { grid-template-columns: 1fr; }
+  .rp-role-tab {
+    padding: 7px 13px;
+    font-size: 0.78rem;
+  }
+
+  .rp-overview {
+    gap: 12px;
+  }
+
+  .rp-role-name {
+    font-size: 1rem;
+  }
+
+  .rp-match-circle {
+    width: 72px;
+    height: 72px;
+  }
+
+  .rp-mc-pct {
+    font-size: 0.85rem;
+  }
+
+  .rp-tally-row {
+    gap: 6px;
+  }
+
+  .rp-tally {
+    font-size: 0.72rem;
+    padding: 3px 9px;
+  }
+
+  .rp-rate-lbl {
+    width: 90px;
+    font-size: 0.74rem;
+  }
+
+  .rp-skills-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .rp-tag {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+  }
+
+  .rp-divider {
+    margin: 16px 0;
+  }
 }
