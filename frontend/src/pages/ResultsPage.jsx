@@ -36,6 +36,33 @@ function AnimatedScore({ target }) {
   return score;
 }
 
+function AnimatedRing({ value, color }) {
+  const circumference = 251;
+  const [offset, setOffset] = useState(circumference);
+
+  useEffect(() => {
+    setOffset(circumference);
+    const t = setTimeout(() => {
+      setOffset(circumference - (circumference * value) / 100);
+    }, 80);
+    return () => clearTimeout(t);
+  }, [value]);
+
+  return (
+    <div className="rp-match-circle">
+      <svg className="rp-ring-svg" viewBox="0 0 96 96">
+        <circle className="rp-ring-track" cx="48" cy="48" r="40" />
+        <circle
+          className="rp-ring-fill"
+          cx="48" cy="48" r="40"
+          style={{ stroke: color, strokeDashoffset: offset }}
+        />
+      </svg>
+      <span className="rp-mc-pct" style={{ color }}>{value}%</span>
+    </div>
+  );
+}
+
 export default function ResultsPage({ data, onAnalyzeNew }) {
   const { analysis, filename } = data;
   const fileInputRef = useRef(null);
@@ -62,7 +89,6 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
           </svg>
           <span>{filename}</span>
         </div>
-
         <div className="rp-bar-score">
           <span className="rp-bar-score-label">ATS Score</span>
           <div className="rp-bar-score-track">
@@ -75,7 +101,6 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
             <AnimatedScore target={analysis.ats_score} /><span className="rp-bar-score-denom">/100</span>
           </span>
         </div>
-
         <input
           ref={fileInputRef} type="file" accept=".pdf,.docx"
           onChange={(e) => e.target.files?.[0] && onAnalyzeNew(e.target.files[0])}
@@ -91,7 +116,6 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
       </header>
 
       <div className="rp-body">
-
         <div className="rp-role-tabs">
           {analysis.top_roles.map((r, i) => (
             <button
@@ -106,7 +130,6 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
         </div>
 
         <div className="rp-card" key={animKey}>
-
           <div className="rp-overview">
             <div className="rp-overview-text">
               <span className="rp-rank-badge">#{activeRole + 1} Match</span>
@@ -126,17 +149,11 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
                   {role.total_missing_skills} skills to learn
                 </div>
               </div>
-
             </div>
-
-            <div className="rp-match-circle" style={{ "--mc": rMeta.color }}>
-              <span className="rp-mc-pct">{role.match_percentage}%</span>
-              <span className="rp-mc-lbl">match</span>
-            </div>
+            <AnimatedRing value={role.match_percentage} color={rMeta.color} />
           </div>
 
           <div className="rp-divider" />
-
           <div className="rp-rates">
             <div className="rp-rate-row">
               <span className="rp-rate-lbl">Required Skills</span>
@@ -151,9 +168,7 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
           </div>
 
           <div className="rp-divider" />
-
           <div className="rp-skills-grid">
-
             {role.skills_you_have?.length > 0 && (
               <div className="rp-skill-block">
                 <p className="rp-skill-block-title rp-sbt--green">
