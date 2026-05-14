@@ -1,0 +1,32 @@
+# ── DEPENDENCIES ──
+node_modules/
+__pycache__/
+*.py[cod]
+
+# ── ENV ──
+.env
+.env.*
+
+# ── BUILD ──
+dist/
+build/
+
+# ── LOGS ──
+*.log
+npm-debug.log*
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── EDITORS ──
+.vscode/
+.idea/
+
+# ── PYTHON ──
+venv/
+.venv/
+*.egg-info/
+
+# ── MISC ──
+*.local
