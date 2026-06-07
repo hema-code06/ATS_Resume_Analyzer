@@ -1,233 +1,113 @@
 # ATS Resume Analyzer
 
-Analyze your resume with ATS Resume Analyzer, get an ATS score, identify missing skills, and improve your chances of getting hired — completely FREE.
+> Upload your resume and instantly get an ATS score, top 3 job role matches from 30+ roles, skill gap analysis, and actionable insights — completely free, with zero data storage.
 
 ---
 
-## What It Does
+## 🌐 Live Demo
 
-Upload your resume (PDF or DOCX) and instantly get:
-
-- **ATS Score** — a 0–100 score based on the quality and value of your skills
-- **Top 3 Role Matches** — the best-fitting job roles from 30+ categories
-- **Match Percentage** — how well your skills match each role's requirements
-- **Skills You Have** — matched required and preferred skills
-- **Missing Required Skills** — high-priority gaps to fill
-- **Missing Preferred Skills** — bonus skills that boost your profile
-- **Required & Preferred Match Rates** — percentage bars per skill category
+| Service | URL |
+|---------|-----|
+| Frontend | [ats-resume-analyzer-neon.vercel.app](https://ats-resume-analyzer-neon.vercel.app/) |
+| Backend API | Render (FastAPI + Python) |
 
 ---
 
-## Features
+## 📌 About the Project
 
-### 📄 Resume Upload & Parsing
-- Upload `.pdf` and `.docx` resumes
-- Drag & drop upload support
-- Extracts and cleans resume text automatically
-- Detects skill variations intelligently
+ATS Resume Analyzer parses uploaded resumes (PDF or DOCX), detects skills using a custom regex-based skill engine, and scores the resume against 30+ real-world job roles across 8 categories.
 
-### 📊 ATS Resume Analysis
-- Calculates ATS score out of 100
-- Weighted scoring system for high-value skills
-- Filters low-impact resume keywords
-- Provides detailed feedback levels
-
-### 🎯 Role Matching
-- Matches resumes against 30+ job roles
-- Shows top 3 best-fit roles
-- Displays role match percentage
-- Highlights required and preferred skill gaps
-
-### 📈 Interactive Analytics UI
-- Animated ATS score progress bar
-- Animated SVG role match circles
-- Dynamic skill match bars
-- Expandable skill tags
-- Smooth transitions & role switching animations
-
-### 📱 Responsive Design
-- Mobile responsive
-- Tablet optimized
-- Desktop & 4K support
-- Clean modern UI
-
-### 🔒 Privacy First
-- Resume files are never stored
-- Secure processing
-- Instant analysis only
+Skills are detected using **word-boundary regex matching** with a variation map — so "ReactJS", "React.js", and "React JS" all map to the same skill. Resumes are **never stored** — all processing is done in memory.
 
 ---
 
-## Tech Stack
+## 🚀 Features
 
-### Frontend
-
-| Tech | Purpose |
-|------|---------|
-| React (Vite) | UI framework |
-| CSS Modules | Styling |
-| Framer Motion | Animations |
-| React Icons | Icons |
-| Plus Jakarta Sans | Font |
-| Vercel | Frontend hosting |
-
-### Backend
-
-| Tech | Purpose |
-|------|---------|
-| FastAPI | REST API framework |
-| pdfplumber | PDF text extraction |
-| python-docx | DOCX text extraction |
-| Regex + Custom Skill Engine | Skill detection |
-| Render | Backend hosting |
+- **Resume Upload** — Drag & drop or click to upload `.pdf` / `.docx`
+- **ATS Score** — 0–100 score using a 3-tier weighted skill system (HIGH / MEDIUM / LOW)
+- **Top 3 Role Matches** — Matched against 30+ job roles with required & preferred skill scoring
+- **Skill Gap Report** — Shows skills you have, missing required skills, and missing preferred skills
+- **Match Percentage** — Per role, with required and preferred match rates shown separately
+- **Animated Results UI** — Animated score counter, progress bars, expandable skill tags, role tabs
+- **Privacy First** — Resume files never stored or shared
 
 ---
 
-## How It Works
-
-### 1️⃣ Resume Parsing (`resume_parser.py`)
-
-- Accepts `.pdf` and `.docx` files
-- Extracts text using:
-  - `pdfplumber` for PDFs
-  - `python-docx` for DOCX
-- Cleans and normalizes text
-- Removes unnecessary formatting and symbols
-
----
-
-### 2️⃣ Skill Detection (`ai_analyzer.py`)
-
-- Builds a skill map from `skills_data.json`
-- Detects:
-  - Required skills
-  - Preferred skills
-  - Skill variations
-- Uses regex word-boundary matching
-- Prevents duplicate skill counting
-
-Example:
-
-```python
-ReactJS → React
-React.js → React
-react → React
-```
-
----
-
-### 3️⃣ ATS Scoring
-
-Skills are weighted by value tier:
+## 📊 ATS Scoring
 
 | Tier | Examples | Points |
 |------|----------|--------|
-| HIGH | React, Python, AWS, ML | 6 |
-| MEDIUM | Git, REST API, CSS | 3 |
-| LOW | Filing, Scheduling | 1 |
+| HIGH | React, Python, AWS | 6 |
+| MEDIUM | Redux, Git, CSS | 3 |
+| LOW | Filing, Scheduling, Documentation | Filtered out |
+
+**Score Levels:** 🎉 Excellent (≥85) · ✅ Good (≥70) · ⚠️ Fair (≥55) · ❌ Poor (<55)
 
 ---
 
-### 4️⃣ Role Matching
+## 🎯 Role Matching
 
-Compares detected skills against 30+ job roles.
+Matches against **30 job roles** across Technology, Design, Marketing, Finance, HR, Healthcare, Engineering, and more.
 
-Returns:
-
-- Top 3 matching roles
-- Missing required skills
-- Missing preferred skills
-- Match percentage
-- Skill overlap
+**Scoring weights:** Required skills 60% · Preferred skills 25% · Experience 10% · Education 5%
 
 ---
 
-### 5️⃣ Score Feedback
-
-| Score | Level |
-|-------|-------|
-| ≥ 85 | 🎉 Excellent |
-| ≥ 70 | ✅ Good |
-| ≥ 55 | ⚠️ Fair |
-| < 55 | ❌ Poor |
-
----
-
-## UI Features
-
-- Drag & drop upload area
-- Animated ATS score bar
-- SVG animated circular match ring
-- Dynamic skill progress bars
-- Role tabs with animations
-- Expandable skill tags
-- Fully responsive design
-- Smooth modern UI
-
----
-
-## Running Locally
-
-### Backend
-
-```bash
-cd backend
-
-pip install -r requirements.txt
-
-uvicorn main:app --reload
-```
-
-Backend runs at:
-
-```bash
-http://localhost:8000
-```
-
----
+## 🛠️ Tech Stack
 
 ### Frontend
+| Technology | Purpose |
+|------------|---------|
+| React.js + Vite | UI framework & build tool |
+| Framer Motion | Animations |
+| Recharts | Data visualization |
+| Axios | HTTP client |
+| React Hot Toast | Notifications |
 
+### Backend
+| Technology | Purpose |
+|------------|---------|
+| FastAPI | REST API framework |
+| pdfplumber | PDF text extraction |
+| python-docx | DOCX text extraction |
+| Regex (re) | Custom skill detection engine |
+| Uvicorn | ASGI server |
+
+---
+
+## 🔧 Local Setup
+
+### Backend
+```bash
+cd backend
+pip install fastapi uvicorn pdfplumber python-docx
+uvicorn main:app --reload
+# Runs at http://localhost:8000
+```
+
+### Frontend
 ```bash
 cd frontend
-
 npm install
-
 npm run dev
-```
-
-Frontend runs at:
-
-```bash
-http://localhost:5173
+# Runs at http://localhost:5173
 ```
 
 ---
 
-## Future Improvements
+## 🔮 Future Improvements
 
-- User authentication
-- Resume history tracking
-- AI-powered resume suggestions
-- Resume keyword optimization
-- LinkedIn profile analysis
-- Export analysis reports
+- [ ] AI-powered resume rewrite suggestions
+- [ ] Export analysis report as PDF
+- [ ] Resume history tracking with user authentication
+- [ ] LinkedIn profile analysis
 
 ---
 
+## ⭐ Show Your Support
 
-## Contributing
-
-Contributions are welcome.
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Open a pull request
+If you like this project, please give it a ⭐ on GitHub — it motivates me to keep building!
 
 ---
 
-⭐ If you like this project, consider giving it a star on GitHub!
-
----
+*Built with ❤️ using React · FastAPI · Python · Vite*
