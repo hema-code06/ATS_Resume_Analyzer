@@ -1,8 +1,10 @@
 import re
 import json
+from pathlib import Path
 from typing import Dict, List
 
-with open("skills_data.json", "r") as f:
+CONFIG_PATH = Path(__file__).parent / "skills_data.json"
+with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     CONFIG = json.load(f)
 
 
@@ -25,6 +27,9 @@ def build_skill_map():
     return skill_map
 
 
+SKILL_MAP = build_skill_map()
+
+
 def normalize_text(text: str) -> str:
     text = text.lower()
     text = re.sub(r"[^a-z0-9\s\+\#\.]", " ", text)
@@ -34,22 +39,14 @@ def normalize_text(text: str) -> str:
 
 def normalize_skills(text: str) -> List[str]:
     text = normalize_text(text)
-    skill_map = build_skill_map()
-
     detected = set()
 
-    for variant, canonical in skill_map.items():
+    for variant, canonical in SKILL_MAP.items():
         pattern = r"\b" + re.escape(variant) + r"\b"
         if re.search(pattern, text):
             detected.add(canonical)
 
-    cleaned = set()
-    for skill in detected:
-        base = skill.replace("apis", "api").strip()
-        base = base.replace("restful api", "rest api")
-        cleaned.add(base)
-
-    return sorted(list(cleaned))
+    return sorted(detected)
 
 
 def filter_low_value_skills(skills: List[str]) -> List[str]:
@@ -89,11 +86,10 @@ def calculate_role_match(found_skills: List[str]) -> List[Dict]:
         missing_pref = preferred - found
 
         req_score = (len(req_match) / len(required)) * 100 if required else 0
-        pref_score = (len(pref_match) / len(preferred)) * \
-            100 if preferred else 0
+        pref_score = (len(pref_match) / len(preferred)) * 100 if preferred else 0
         final_score = (
-            req_score * weights["requiredSkillMatch"] +
-            pref_score * weights["preferredSkillMatch"]
+            req_score * weights["requiredSkillMatch"]
+            + pref_score * weights["preferredSkillMatch"]
         )
 
         all_matched = list(req_match | pref_match)
@@ -102,19 +98,21 @@ def calculate_role_match(found_skills: List[str]) -> List[Dict]:
         all_missing = list(missing_req | missing_pref)
         all_missing.sort(key=lambda s: get_skill_value(s), reverse=True)
 
-        results.append({
-            "role_title": role["title"],
-            "role_category": role["category"],
-            "match_percentage": round(final_score, 2),
-            "skills_you_have": all_matched,
-            "total_matched_skills": len(all_matched),
-            "missing_required_skills": sorted(missing_req),
-            "missing_preferred_skills": sorted(missing_pref),
-            "all_missing_skills": all_missing,
-            "total_missing_skills": len(all_missing),
-            "required_match_rate": round(req_score, 1),
-            "preferred_match_rate": round(pref_score, 1)
-        })
+        results.append(
+            {
+                "role_title": role["title"],
+                "role_category": role["category"],
+                "match_percentage": round(final_score, 2),
+                "skills_you_have": all_matched,
+                "total_matched_skills": len(all_matched),
+                "missing_required_skills": sorted(missing_req),
+                "missing_preferred_skills": sorted(missing_pref),
+                "all_missing_skills": all_missing,
+                "total_missing_skills": len(all_missing),
+                "required_match_rate": round(req_score, 1),
+                "preferred_match_rate": round(pref_score, 1),
+            }
+        )
 
     return sorted(results, key=lambda x: x["match_percentage"], reverse=True)[:3]
 
@@ -148,15 +146,17 @@ def calculate_ats_score(found_skills: List[str]) -> int:
     return normalized
 
 
-def generate_smart_insights(ats_score: int, top_roles: List[Dict], found_skills: List[str]) -> Dict:
+def generate_smart_insights(
+    ats_score: int, top_roles: List[Dict], found_skills: List[str]
+) -> Dict:
 
     thresholds = CONFIG["matchingThresholds"]
     skill_map = CONFIG.get("skillValueMap", {})
 
-    high_skills = [s for s in found_skills if s.lower()
-                   in skill_map.get("HIGH", [])]
-    medium_skills = [s for s in found_skills if s.lower()
-                     in skill_map.get("MEDIUM", [])]
+    high_skills = [s for s in found_skills if s.lower() in skill_map.get("HIGH", [])]
+    medium_skills = [
+        s for s in found_skills if s.lower() in skill_map.get("MEDIUM", [])
+    ]
 
     if ats_score >= thresholds["excellent"]:
         level = "Excellent"
@@ -178,8 +178,8 @@ def generate_smart_insights(ats_score: int, top_roles: List[Dict], found_skills:
         "skill_breakdown": {
             "high_value_count": len(high_skills),
             "medium_value_count": len(medium_skills),
-            "total_skills": len(found_skills)
-        }
+            "total_skills": len(found_skills),
+        },
     }
 
 
@@ -195,5 +195,5 @@ def analyze_resume(text: str) -> Dict:
         "total_skills_found": len(found_skills),
         "found_skills": found_skills,
         "top_roles": top_roles,
-        "feedback": feedback
+        "feedback": feedback,
     }

@@ -8,7 +8,6 @@ app = FastAPI(title="ATS Resume Analyzer API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -16,13 +15,11 @@ app.add_middleware(
 
 @app.get("/")
 def health_check():
-    return {
-        "message": "ATS Resume Analyzer API running successfully.."
-    }
+    return {"message": "ATS Resume Analyzer API running successfully.."}
 
 
 @app.post("/upload")
-async def upload_resume(file: UploadFile = File(...)):
+def upload_resume(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="File is required")
 
@@ -31,7 +28,8 @@ async def upload_resume(file: UploadFile = File(...)):
 
         if not text:
             raise HTTPException(
-                status_code=400, detail="Could not extract text from file!!")
+                status_code=400, detail="Could not extract text from file!!"
+            )
 
         result = analyze_resume(text)
 
@@ -41,9 +39,9 @@ async def upload_resume(file: UploadFile = File(...)):
                 "ats_score": result["ats_score"],
                 "total_skills_found": result["total_skills_found"],
                 "found_skills": result["found_skills"],
-                "top_roles": result["top_roles"]
+                "top_roles": result["top_roles"],
             },
-            "feedback": result["feedback"]
+            "feedback": result["feedback"],
         }
 
     except HTTPException:
@@ -51,6 +49,5 @@ async def upload_resume(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500,
-            detail=f"Resume processing failed: {str(e)}"
+            status_code=500, detail=f"Resume processing failed: {str(e)}"
         )
