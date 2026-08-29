@@ -68,7 +68,6 @@ function AnimatedRing({ value, color }) {
   const [offset, setOffset] = useState(circumference);
 
   useEffect(() => {
-    setOffset(circumference);
     const t = setTimeout(() => {
       setOffset(circumference - (circumference * value) / 100);
     }, 80);
