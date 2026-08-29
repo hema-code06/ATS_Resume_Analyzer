@@ -49,8 +49,14 @@ const UploadPage = ({ onUpload, isLoading }) => {
         onDragOver={handleDrag}
         onDrop={handleDrop}
         onClick={() => !isLoading && fileInputRef.current?.click()}
+        onKeyDown={(e) => {
+          if ((e.key === "Enter" || e.key === " ") && !isLoading) {
+            e.preventDefault();
+            fileInputRef.current?.click();
+          }
+        }}
         role='button'
-        tableIndex={0}
+        tabIndex={0}
       >
         {isLoading ? (
           <p className='up-loading-title'>Analyzing Resume...</p>

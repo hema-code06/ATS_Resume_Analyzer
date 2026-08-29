@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import "./App.css";
 import UploadPage from "./pages/UploadPage";
 import ResultsPage from "./pages/ResultsPage";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
   const [currentPage, setCurrentPage] = useState("upload");
@@ -9,7 +12,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    fetch("https://ats-resume-analyzer-pgjt.onrender.com/");
+    fetch(`${API_URL}/`).catch(() => { });
   }, []);
 
   const handleUpload = async (file) => {
@@ -21,7 +24,7 @@ function App() {
     ];
 
     if (!validTypes.includes(file.type)) {
-      alert("Invalid file type. Please upload PDF or DOCX", "error");
+      toast.error("Invalid file type. Please upload PDF or DOCX");
       return;
     }
 
@@ -31,7 +34,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("https://ats-resume-analyzer-pgjt.onrender.com/upload", {
+      const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -46,7 +49,7 @@ function App() {
       setCurrentPage("results");
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to analyze resume. Please try again.");
+      toast.error("Failed to analyze resume. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -58,6 +61,7 @@ function App() {
 
   return (
     <div className="app">
+      <Toaster position="top-center" />
       {currentPage === "upload" && (
         <UploadPage onUpload={handleUpload} isLoading={isLoading} />
       )}
