@@ -2,6 +2,23 @@ import re
 import pdfplumber
 from docx import Document
 
+EMAIL_PATTERN = re.compile(r"[a-z0-9_.+-]+@[a-z0-9-]+\.[a-z0-9-.]+")
+PHONE_PATTERN = re.compile(r"(\+?\d[\d\-\s\(\)]{8,}\d)")
+
+SECTION_KEYWORDS = {
+    "summary": ["summary", "objective", "profile"],
+    "skills": ["skills", "technical skills", "core competencies"],
+    "experience": [
+        "experience",
+        "work experience",
+        "employment",
+        "projects",
+        "project experience",
+    ],
+    "education": ["education", "academic background"],
+    "certifications": ["certification", "certifications", "licenses"],
+}
+
 
 def clean_text(text: str) -> str:
     if not text:
@@ -51,7 +68,23 @@ def extract_resume_text(file, filename: str) -> str:
     raise ValueError("Unsupported file format. Upload PDF or DOCX only.")
 
 
-def analyze_pdf_formatting(file) -> dict:
+def detect_sections(text: str) -> dict:
+    found = {}
+    for section, keywords in SECTION_KEYWORDS.items():
+        found[section] = any(
+            re.search(r"\b" + re.escape(k) + r"\b", text) for k in keywords
+        )
+    return found
+
+
+def detect_contact_info(text: str) -> dict:
+    return {
+        "has_email": bool(EMAIL_PATTERN.search(text)),
+        "has_phone": bool(PHONE_PATTERN.search(text)),
+    }
+
+
+def analyze_pdf_structure(file) -> dict:
     file.seek(0)
     with pdfplumber.open(file) as pdf:
         page_count = len(pdf.pages)
@@ -67,7 +100,7 @@ def analyze_pdf_formatting(file) -> dict:
     }
 
 
-def analyze_docx_formatting(file) -> dict:
+def analyze_docx_structure(file) -> dict:
     file.seek(0)
     doc = Document(file)
 
@@ -76,25 +109,25 @@ def analyze_docx_formatting(file) -> dict:
     has_images = len(doc.inline_shapes) > 0
 
     return {
-        "page_count": None,  
+        "page_count": None,
         "word_count": word_count,
         "has_images": has_images,
         "has_tables": has_tables,
     }
 
 
-def analyze_resume_formatting(file, filename: str) -> dict:
-    """Checks structural traits that commonly trip up real ATS parsers -
-    separate from skill scoring. Returns raw flags; main.py turns these
-    into human-readable warnings."""
+def analyze_resume_formatting(file, filename: str, text: str) -> dict:
     filename = filename.lower()
 
     if filename.endswith(".pdf"):
-        result = analyze_pdf_formatting(file)
+        result = analyze_pdf_structure(file)
     elif filename.endswith(".docx"):
-        result = analyze_docx_formatting(file)
+        result = analyze_docx_structure(file)
     else:
         raise ValueError("Unsupported file format. Upload PDF or DOCX only.")
+
+    result["sections"] = detect_sections(text)
+    result["contact_info"] = detect_contact_info(text)
 
     warnings = []
 
@@ -114,6 +147,16 @@ def analyze_resume_formatting(file, filename: str) -> dict:
         warnings.append(
             "Very little extractable text - the resume may be too sparse or mostly image-based."
         )
+
+    missing_sections = [s for s, present in result["sections"].items() if not present]
+    if missing_sections:
+        warnings.append(
+            f"Missing common resume sections: {', '.join(missing_sections)}."
+        )
+    if not result["contact_info"]["has_email"]:
+        warnings.append("No email address detected.")
+    if not result["contact_info"]["has_phone"]:
+        warnings.append("No phone number detected.")
 
     result["warnings"] = warnings
     result["is_ats_friendly"] = len(warnings) == 0
