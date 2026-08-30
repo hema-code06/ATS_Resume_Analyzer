@@ -1763,14 +1763,137 @@
   },
   "scoringWeights": {
     "requiredSkillMatch": 0.6,
-    "preferredSkillMatch": 0.25,
-    "experienceRelevance": 0.1,
-    "educationRelevance": 0.05
+    "preferredSkillMatch": 0.4
   },
   "matchingThresholds": {
     "excellent": 85,
     "good": 70,
     "fair": 55,
     "poor": 40
+  },
+  "skillClusters": [
+    [
+      "React",
+      "Vue.js",
+      "Angular",
+      "Svelte"
+    ],
+    [
+      "Material-UI",
+      "Tailwind CSS",
+      "Bootstrap",
+      "Sass"
+    ],
+    [
+      "Node.js",
+      "Python",
+      "Java",
+      "PHP",
+      "Ruby"
+    ],
+    [
+      "Express.js",
+      "FastAPI",
+      "Django",
+      "Flask",
+      "Spring Boot"
+    ],
+    [
+      "MongoDB",
+      "PostgreSQL",
+      "MySQL",
+      "SQL",
+      "Redis"
+    ],
+    [
+      "AWS",
+      "Azure",
+      "GCP"
+    ],
+    [
+      "Docker",
+      "Kubernetes"
+    ],
+    [
+      "Jest",
+      "Automation Testing",
+      "Unit Testing",
+      "Integration Testing",
+      "Testing Frameworks",
+      "Agile Testing"
+    ],
+    [
+      "CI/CD",
+      "Jenkins",
+      "GitHub Actions",
+      "CircleCI",
+      "CI/CD for Mobile"
+    ],
+    [
+      "Ansible",
+      "Terraform",
+      "CloudFormation"
+    ],
+    [
+      "Adobe Photoshop",
+      "Adobe Illustrator",
+      "Adobe XD",
+      "Figma",
+      "Sketch"
+    ],
+    [
+      "Adobe Premiere Pro",
+      "After Effects",
+      "Final Cut Pro",
+      "DaVinci Resolve"
+    ],
+    [
+      "Google Ads",
+      "Facebook Ads",
+      "Affiliate Marketing",
+      "Campaign Management"
+    ],
+    [
+      "SEMrush",
+      "Ahrefs",
+      "SEO"
+    ],
+    [
+      "Salesforce",
+      "HubSpot",
+      "CRM Software"
+    ],
+    [
+      "Excel",
+      "Google Sheets",
+      "Power BI",
+      "Tableau"
+    ],
+    [
+      "Kotlin",
+      "Swift",
+      "Flutter",
+      "React Native"
+    ],
+    [
+      "GraphQL",
+      "REST API",
+      "RESTful APIs"
+    ],
+    [
+      "Authentication",
+      "Authorization",
+      "API Security"
+    ],
+    [
+      "Agile Methodology",
+      "Agile Methodologies",
+      "Scrum",
+      "Kanban"
+    ]
+  ],
+  "matchFairness": {
+    "curveExponent": 0.75,
+    "partialCreditRatio": 0.5
   }
 }

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from resume_parser import extract_resume_text
+from resume_parser import extract_resume_text, analyze_resume_formatting
 from ai_analyzer import analyze_resume
 
 app = FastAPI(title="ATS Resume Analyzer API")
@@ -32,15 +32,20 @@ def upload_resume(file: UploadFile = File(...)):
             )
 
         result = analyze_resume(text)
+        formatting = analyze_resume_formatting(file.file, file.filename)
 
         return {
             "filename": file.filename,
+            "resume_text": text,
             "analysis": {
                 "ats_score": result["ats_score"],
                 "total_skills_found": result["total_skills_found"],
                 "found_skills": result["found_skills"],
                 "top_roles": result["top_roles"],
+                "cross_role_skills": result["cross_role_skills"],
+                "high_impact_missing_skills": result["high_impact_missing_skills"],
             },
+            "formatting_check": formatting,
             "feedback": result["feedback"],
         }
 
