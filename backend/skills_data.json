@@ -182,7 +182,7 @@
         "Swift",
         "Kotlin",
         "Mobile UI/UX",
-        "REST APIs",
+        "REST API",
         "Git",
         "App Store Deployment",
         "Push Notifications",
@@ -245,7 +245,7 @@
       "requiredSkills": [
         "Product Strategy",
         "Roadmap Planning",
-        "Agile Methodologies",
+        "Agile Methodology",
         "Stakeholder Management",
         "User Stories",
         "Market Research",
@@ -365,7 +365,7 @@
         "Tableau",
         "Power BI",
         "Python",
-        "Agile Methodologies",
+        "Agile Methodology",
         "JIRA",
         "Visio",
         "UML",
@@ -516,7 +516,7 @@
       "category": "Management",
       "requiredSkills": [
         "Project Planning",
-        "Agile Methodologies",
+        "Agile Methodology",
         "Scrum",
         "Risk Management",
         "Stakeholder Management",
@@ -1234,7 +1234,6 @@
       "Adobe Photoshop",
       "Adobe XD",
       "Affiliate Marketing",
-      "Agile Methodologies",
       "Agile Methodology",
       "Agile Testing",
       "Ahrefs",
@@ -1692,10 +1691,11 @@
       "artificial intelligence"
     ],
     "REST API": [
-      "RESTful API",
       "REST",
-      "restful",
-      "rest api"
+      "REST APIs",
+      "RESTful API",
+      "rest api",
+      "restful"
     ],
     "Git": [
       "GitHub",
@@ -1759,6 +1759,9 @@
       "jwt",
       "JSON Web Token",
       "json web token"
+    ],
+    "Agile Methodology": [
+      "Agile Methodologies"
     ]
   },
   "scoringWeights": {
@@ -1887,7 +1890,6 @@
     ],
     [
       "Agile Methodology",
-      "Agile Methodologies",
       "Scrum",
       "Kanban"
     ]
