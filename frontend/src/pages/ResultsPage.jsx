@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import "./ResultsPage.css";
 
 const scoreMeta = (s) => {
@@ -52,7 +52,7 @@ function AnimatedScore({ target }) {
   const [score, setScore] = useState(0);
   useEffect(() => {
     let current = 0;
-    const step = Math.ceil(target / 40);
+    const step = Math.ceil(target / 40) || 1;
     const t = setInterval(() => {
       current = Math.min(current + step, target);
       setScore(current);
@@ -63,50 +63,228 @@ function AnimatedScore({ target }) {
   return score;
 }
 
-function AnimatedRing({ value, color }) {
-  const circumference = 251;
-  const [offset, setOffset] = useState(circumference);
+function highlightResumeText(text, skills) {
+  if (!text || !skills?.length) return text;
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setOffset(circumference - (circumference * value) / 100);
-    }, 80);
-    return () => clearTimeout(t);
-  }, [value]);
+  const skillSet = new Set(skills.map((s) => s.toLowerCase()));
+  const escaped = [...skillSet]
+    .sort((a, b) => b.length - a.length)
+    .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+
+  const pattern = new RegExp(`\\b(${escaped.join("|")})\\b`, "gi");
+  const parts = text.split(pattern);
+
+  return parts.map((part, i) =>
+    skillSet.has(part.toLowerCase())
+      ? <mark key={i} className="rp-highlight">{part}</mark>
+      : <span key={i}>{part}</span>
+  );
+}
+
+function FormattingCheck({ formatting }) {
+  if (!formatting) return null;
+  const friendly = formatting.is_ats_friendly;
 
   return (
-    <div className="rp-match-circle">
-      <svg className="rp-ring-svg" viewBox="0 0 96 96">
-        <circle className="rp-ring-track" cx="48" cy="48" r="40" />
-        <circle
-          className="rp-ring-fill"
-          cx="48" cy="48" r="40"
-          style={{ stroke: color, strokeDashoffset: offset }}
-        />
-      </svg>
-      <span className="rp-mc-pct" style={{ color }}>{value}%</span>
+    <div className="rp-card rp-fmt-card">
+      <div className="rp-fmt-head">
+        <div>
+          <p className="rp-section-title">ATS Formatting Check</p>
+          <p className="rp-section-sub">How well your file structure survives real ATS parsers</p>
+        </div>
+        <span className={`rp-fmt-badge ${friendly ? "rp-fmt-badge--good" : "rp-fmt-badge--warn"}`}>
+          {friendly ? "ATS Friendly" : "Needs Attention"}
+        </span>
+      </div>
+
+      <div className="rp-fmt-stats">
+        {formatting.page_count != null && (
+          <div className="rp-fmt-stat">
+            <span className="rp-fmt-stat-num">{formatting.page_count}</span>
+            <span className="rp-fmt-stat-lbl">Pages</span>
+          </div>
+        )}
+        <div className="rp-fmt-stat">
+          <span className="rp-fmt-stat-num">{formatting.word_count}</span>
+          <span className="rp-fmt-stat-lbl">Words</span>
+        </div>
+        <div className="rp-fmt-stat">
+          <span className="rp-fmt-stat-num">{formatting.has_tables ? "Yes" : "No"}</span>
+          <span className="rp-fmt-stat-lbl">Tables</span>
+        </div>
+        <div className="rp-fmt-stat">
+          <span className="rp-fmt-stat-num">{formatting.has_images ? "Yes" : "No"}</span>
+          <span className="rp-fmt-stat-lbl">Images</span>
+        </div>
+      </div>
+
+      {formatting.warnings?.length > 0 && (
+        <ul className="rp-fmt-warnings">
+          {formatting.warnings.map((w, i) => (
+            <li key={i}>{w}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function HighImpactBanner({ skills }) {
+  if (!skills?.length) return null;
+  const top = skills[0];
+  const rest = skills.slice(1);
+
+  return (
+    <div className="rp-card rp-impact-card">
+      <p className="rp-section-title">Highest-Leverage Skill To Learn</p>
+      <div className="rp-impact-main">
+        <span className="rp-impact-skill">{top.skill}</span>
+        <span className="rp-impact-detail">unlocks {top.roles_unlocked} more role{top.roles_unlocked === 1 ? "" : "s"}</span>
+      </div>
+      {rest.length > 0 && (
+        <div className="rp-impact-rest">
+          {rest.map((s, i) => (
+            <span key={i} className="rp-impact-chip">{s.skill} · {s.roles_unlocked}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CrossRoleSkills({ skills }) {
+  if (!skills?.length) return null;
+
+  return (
+    <div className="rp-card rp-crossrole-card">
+      <p className="rp-section-title">Skills Working Across Multiple Roles</p>
+      <div className="rp-tag-row">
+        {skills.map((s, i) => (
+          <span key={i} className="rp-tag rp-tag--indigo">
+            {s.skill} <span className="rp-crossrole-cnt">×{s.roles.length}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RoleCard({ role, index }) {
+  const missingTotal = role.missing_required_skills.length + role.missing_preferred_skills.length;
+
+  return (
+    <div className="rp-card rp-role-card" style={{ animationDelay: `${index * 90}ms` }}>
+      <div className="rp-overview">
+        <div className="rp-overview-text">
+          <span className="rp-rank-badge">#{index + 1} Match</span>
+          <h2 className="rp-role-name">{role.role_title}</h2>
+          <div className="rp-tally-row">
+            <p className="rp-role-cat">{role.role_category}</p>
+            <div className="rp-tally rp-tally--green">
+              <svg viewBox="0 0 12 12" fill="none" width="11" height="11">
+                <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {role.total_matched_skills} skills matched
+            </div>
+            <div className="rp-tally rp-tally--amber">
+              <svg viewBox="0 0 12 12" fill="none" width="11" height="11">
+                <path d="M6 3v4M6 8.5h.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+              {missingTotal} skills to learn
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="rp-divider" />
+      <div className="rp-rates">
+        <div className="rp-rate-row">
+          <span className="rp-rate-lbl">Required Skills</span>
+          <AnimatedBar value={role.required_match_rate} color="#4f46e5" delay={80} />
+          <span className="rp-rate-pct" style={{ color: "#4f46e5" }}>{role.required_match_rate}%</span>
+        </div>
+        <div className="rp-rate-row">
+          <span className="rp-rate-lbl">Preferred Skills</span>
+          <AnimatedBar value={role.preferred_match_rate} color="#16a34a" delay={160} />
+          <span className="rp-rate-pct" style={{ color: "#16a34a" }}>{role.preferred_match_rate}%</span>
+        </div>
+      </div>
+
+      <div className="rp-divider" />
+      <div className="rp-skills-grid">
+        {role.skills_you_have?.length > 0 && (
+          <div className="rp-skill-block">
+            <p className="rp-skill-block-title rp-sbt--green">
+              <svg viewBox="0 0 12 12" fill="none" width="12" height="12">
+                <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              You Have
+              <span className="rp-sbt-cnt">{role.total_matched_skills}</span>
+            </p>
+            <SkillTagList skills={role.skills_you_have} className="rp-tag--green" />
+          </div>
+        )}
+
+        {role.missing_required_skills?.length > 0 && (
+          <div className="rp-skill-block">
+            <p className="rp-skill-block-title rp-sbt--red">
+              <svg viewBox="0 0 12 12" fill="none" width="12" height="12">
+                <path d="M6 3v4M6 8.5h.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+              Missing Required
+              <span className="rp-sbt-cnt">{role.missing_required_skills.length}</span>
+            </p>
+            <SkillTagList skills={role.missing_required_skills} className="rp-tag--red" />
+          </div>
+        )}
+
+        {role.missing_preferred_skills?.length > 0 && (
+          <div className="rp-skill-block">
+            <p className="rp-skill-block-title rp-sbt--amber">
+              <svg viewBox="0 0 12 12" fill="none" width="12" height="12">
+                <path d="M6 1v2M6 9v2M1 6h2M9 6h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              Missing Preferred
+              <span className="rp-sbt-cnt">{role.missing_preferred_skills.length}</span>
+            </p>
+            <SkillTagList skills={role.missing_preferred_skills} className="rp-tag--amber" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ResumePreview({ text, skills }) {
+  const [open, setOpen] = useState(false);
+  const highlighted = useMemo(() => highlightResumeText(text, skills), [text, skills]);
+
+  if (!text) return null;
+
+  return (
+    <div className="rp-card rp-preview-card">
+      <button className="rp-preview-toggle" onClick={() => setOpen((o) => !o)}>
+        <span className="rp-section-title">Resume Preview With Matched Skills</span>
+        <svg
+          width="14" height="14" viewBox="0 0 14 14" fill="none"
+          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+        >
+          <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {open && <div className="rp-preview-body">{highlighted}</div>}
     </div>
   );
 }
 
 export default function ResultsPage({ data, onAnalyzeNew }) {
-  const { analysis, filename } = data;
+  const { analysis, filename, formatting_check, resume_text } = data;
   const fileInputRef = useRef(null);
-  const [activeRole, setActiveRole] = useState(0);
-  const [animKey, setAnimKey] = useState(0);
 
-  const role = analysis.top_roles[activeRole];
   const sMeta = scoreMeta(analysis.ats_score);
-  const rMeta = scoreMeta(role.match_percentage);
-
-  const handleRoleChange = (i) => {
-    setActiveRole(i);
-    setAnimKey(k => k + 1);
-  };
 
   return (
     <div className="rp">
-
       <header className="rp-bar">
         <div className="rp-bar-file">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -142,99 +320,17 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
       </header>
 
       <div className="rp-body">
-        <div className="rp-role-tabs">
-          {analysis.top_roles.map((r, i) => (
-            <button
-              key={i}
-              className={`rp-role-tab ${activeRole === i ? "active" : ""}`}
-              onClick={() => handleRoleChange(i)}
-            >
-              <span className="rp-tab-rank">#{i + 1}</span>
-              {r.role_title.split(" ").slice(0, 3).join(" ")}
-            </button>
+        <FormattingCheck formatting={formatting_check} />
+        <HighImpactBanner skills={analysis.high_impact_missing_skills} />
+        <CrossRoleSkills skills={analysis.cross_role_skills} />
+
+        <div className="rp-role-list">
+          {analysis.top_roles.map((role, i) => (
+            <RoleCard key={role.role_title} role={role} index={i} />
           ))}
         </div>
 
-        <div className="rp-card" key={animKey}>
-          <div className="rp-overview">
-            <div className="rp-overview-text">
-              <span className="rp-rank-badge">#{activeRole + 1} Match</span>
-              <h2 className="rp-role-name">{role.role_title}</h2>
-              <div className="rp-tally-row">
-                <p className="rp-role-cat">{role.role_category}</p>
-                <div className="rp-tally rp-tally--green">
-                  <svg viewBox="0 0 12 12" fill="none" width="11" height="11">
-                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  {role.total_matched_skills} skills matched
-                </div>
-                <div className="rp-tally rp-tally--amber">
-                  <svg viewBox="0 0 12 12" fill="none" width="11" height="11">
-                    <path d="M6 3v4M6 8.5h.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
-                  {role.total_missing_skills} skills to learn
-                </div>
-              </div>
-            </div>
-            <AnimatedRing value={role.match_percentage} color={rMeta.color} />
-          </div>
-
-          <div className="rp-divider" />
-          <div className="rp-rates">
-            <div className="rp-rate-row">
-              <span className="rp-rate-lbl">Required Skills</span>
-              <AnimatedBar value={role.required_match_rate} color="#4f46e5" delay={80} />
-              <span className="rp-rate-pct" style={{ color: "#4f46e5" }}>{role.required_match_rate}%</span>
-            </div>
-            <div className="rp-rate-row">
-              <span className="rp-rate-lbl">Preferred Skills</span>
-              <AnimatedBar value={role.preferred_match_rate} color="#16a34a" delay={160} />
-              <span className="rp-rate-pct" style={{ color: "#16a34a" }}>{role.preferred_match_rate}%</span>
-            </div>
-          </div>
-
-          <div className="rp-divider" />
-          <div className="rp-skills-grid">
-            {role.skills_you_have?.length > 0 && (
-              <div className="rp-skill-block">
-                <p className="rp-skill-block-title rp-sbt--green">
-                  <svg viewBox="0 0 12 12" fill="none" width="12" height="12">
-                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  You Have
-                  <span className="rp-sbt-cnt">{role.total_matched_skills}</span>
-                </p>
-                <SkillTagList skills={role.skills_you_have} className="rp-tag--green" />
-              </div>
-            )}
-
-            {role.missing_required_skills?.length > 0 && (
-              <div className="rp-skill-block">
-                <p className="rp-skill-block-title rp-sbt--red">
-                  <svg viewBox="0 0 12 12" fill="none" width="12" height="12">
-                    <path d="M6 3v4M6 8.5h.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
-                  Missing Required
-                  <span className="rp-sbt-cnt">{role.missing_required_skills.length}</span>
-                </p>
-                <SkillTagList skills={role.missing_required_skills} className="rp-tag--red" />
-              </div>
-            )}
-
-            {role.missing_preferred_skills?.length > 0 && (
-              <div className="rp-skill-block">
-                <p className="rp-skill-block-title rp-sbt--amber">
-                  <svg viewBox="0 0 12 12" fill="none" width="12" height="12">
-                    <path d="M6 1v2M6 9v2M1 6h2M9 6h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                  Missing Preferred
-                  <span className="rp-sbt-cnt">{role.missing_preferred_skills.length}</span>
-                </p>
-                <SkillTagList skills={role.missing_preferred_skills} className="rp-tag--amber" />
-              </div>
-            )}
-          </div>
-        </div>
+        <ResumePreview text={resume_text} skills={analysis.found_skills} />
       </div>
     </div>
   );
