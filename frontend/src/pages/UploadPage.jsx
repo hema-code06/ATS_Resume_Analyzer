@@ -4,6 +4,7 @@ import './UploadPage.css';
 const UploadPage = ({ onUpload, isLoading }) => {
   const fileInputRef = useRef(null);
   const [dragActive, setDragActive] = useState(false);
+  const [priority, setPriority] = useState('');
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -20,12 +21,12 @@ const UploadPage = ({ onUpload, isLoading }) => {
     setDragActive(false);
 
     const file = e.dataTransfer.files?.[0];
-    if (file) onUpload(file);
+    if (file) onUpload(file, priority);
   };
 
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
-    if (file) onUpload(file);
+    if (file) onUpload(file, priority);
   };
 
   return (
@@ -33,6 +34,22 @@ const UploadPage = ({ onUpload, isLoading }) => {
       <h1 className='up-headline'>
         Get Clear Insight, Into Your Skills.
       </h1>
+
+      <div className="up-priority">
+        <label htmlFor="up-priority-input" className="up-priority-label">
+          Prioritize a role or category (optional)
+        </label>
+        <input
+          id="up-priority-input"
+          type="text"
+          className="up-priority-input"
+          placeholder="e.g. Backend, Data Science, Marketing"
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
+          disabled={isLoading}
+        />
+      </div>
+
       <input
         type="file"
         ref={fileInputRef}

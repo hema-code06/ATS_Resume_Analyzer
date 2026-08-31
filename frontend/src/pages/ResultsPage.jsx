@@ -1,11 +1,11 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./ResultsPage.css";
 
 const scoreMeta = (s) => {
-  if (s >= 85) return { label: "Excellent", color: "#16a34a" };
-  if (s >= 70) return { label: "Good", color: "#4f46e5" };
-  if (s >= 55) return { label: "Fair", color: "#d97706" };
-  return { label: "Poor", color: "#dc2626" };
+  if (s >= 85) return { label: "Excellent", color: "var(--color-success)" };
+  if (s >= 70) return { label: "Good", color: "var(--color-primary)" };
+  if (s >= 55) return { label: "Fair", color: "var(--color-warning)" };
+  return { label: "Poor", color: "var(--color-danger)" };
 };
 
 function SkillTagList({ skills, className }) {
@@ -63,27 +63,17 @@ function AnimatedScore({ target }) {
   return score;
 }
 
-function highlightResumeText(text, skills) {
-  if (!text || !skills?.length) return text;
-
-  const skillSet = new Set(skills.map((s) => s.toLowerCase()));
-  const escaped = [...skillSet]
-    .sort((a, b) => b.length - a.length)
-    .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-
-  const pattern = new RegExp(`\\b(${escaped.join("|")})\\b`, "gi");
-  const parts = text.split(pattern);
-
-  return parts.map((part, i) =>
-    skillSet.has(part.toLowerCase())
-      ? <mark key={i} className="rp-highlight">{part}</mark>
-      : <span key={i}>{part}</span>
-  );
-}
-
 function FormattingCheck({ formatting }) {
   if (!formatting) return null;
   const friendly = formatting.is_ats_friendly;
+
+  const sectionLabels = {
+    summary: "Summary",
+    skills: "Skills",
+    experience: "Experience",
+    education: "Education",
+    certifications: "Certifications",
+  };
 
   return (
     <div className="rp-card rp-fmt-card">
@@ -118,6 +108,20 @@ function FormattingCheck({ formatting }) {
         </div>
       </div>
 
+      <div className="rp-fmt-checks">
+        {Object.entries(formatting.sections || {}).map(([key, present]) => (
+          <span key={key} className={`rp-check-chip ${present ? "rp-check-chip--yes" : "rp-check-chip--no"}`}>
+            {present ? "✓" : "✕"} {sectionLabels[key] || key}
+          </span>
+        ))}
+        <span className={`rp-check-chip ${formatting.contact_info?.has_email ? "rp-check-chip--yes" : "rp-check-chip--no"}`}>
+          {formatting.contact_info?.has_email ? "✓" : "✕"} Email
+        </span>
+        <span className={`rp-check-chip ${formatting.contact_info?.has_phone ? "rp-check-chip--yes" : "rp-check-chip--no"}`}>
+          {formatting.contact_info?.has_phone ? "✓" : "✕"} Phone
+        </span>
+      </div>
+
       {formatting.warnings?.length > 0 && (
         <ul className="rp-fmt-warnings">
           {formatting.warnings.map((w, i) => (
@@ -129,39 +133,17 @@ function FormattingCheck({ formatting }) {
   );
 }
 
-function HighImpactBanner({ skills }) {
-  if (!skills?.length) return null;
-  const top = skills[0];
-  const rest = skills.slice(1);
+function FuzzyCorrections({ corrections }) {
+  if (!corrections?.length) return null;
 
   return (
-    <div className="rp-card rp-impact-card">
-      <p className="rp-section-title">Highest-Leverage Skill To Learn</p>
-      <div className="rp-impact-main">
-        <span className="rp-impact-skill">{top.skill}</span>
-        <span className="rp-impact-detail">unlocks {top.roles_unlocked} more role{top.roles_unlocked === 1 ? "" : "s"}</span>
-      </div>
-      {rest.length > 0 && (
-        <div className="rp-impact-rest">
-          {rest.map((s, i) => (
-            <span key={i} className="rp-impact-chip">{s.skill} · {s.roles_unlocked}</span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function CrossRoleSkills({ skills }) {
-  if (!skills?.length) return null;
-
-  return (
-    <div className="rp-card rp-crossrole-card">
-      <p className="rp-section-title">Skills Working Across Multiple Roles</p>
+    <div className="rp-card rp-fuzzy-card">
+      <p className="rp-section-title">Possible Typos Auto-Corrected</p>
+      <p className="rp-section-sub">These were matched even though the spelling was slightly off</p>
       <div className="rp-tag-row">
-        {skills.map((s, i) => (
-          <span key={i} className="rp-tag rp-tag--indigo">
-            {s.skill} <span className="rp-crossrole-cnt">×{s.roles.length}</span>
+        {corrections.map((c, i) => (
+          <span key={i} className="rp-fuzzy-chip">
+            {c.typo} <span className="rp-fuzzy-arrow">→</span> {c.matched_to}
           </span>
         ))}
       </div>
@@ -176,7 +158,10 @@ function RoleCard({ role, index }) {
     <div className="rp-card rp-role-card" style={{ animationDelay: `${index * 90}ms` }}>
       <div className="rp-overview">
         <div className="rp-overview-text">
-          <span className="rp-rank-badge">#{index + 1} Match</span>
+          <div className="rp-badge-row">
+            <span className="rp-rank-badge">#{index + 1} Match</span>
+            {role.prioritized && <span className="rp-priority-badge">Prioritized</span>}
+          </div>
           <h2 className="rp-role-name">{role.role_title}</h2>
           <div className="rp-tally-row">
             <p className="rp-role-cat">{role.role_category}</p>
@@ -200,13 +185,13 @@ function RoleCard({ role, index }) {
       <div className="rp-rates">
         <div className="rp-rate-row">
           <span className="rp-rate-lbl">Required Skills</span>
-          <AnimatedBar value={role.required_match_rate} color="#4f46e5" delay={80} />
-          <span className="rp-rate-pct" style={{ color: "#4f46e5" }}>{role.required_match_rate}%</span>
+          <AnimatedBar value={role.required_match_rate} color="var(--color-primary)" delay={80} />
+          <span className="rp-rate-pct" style={{ color: "var(--color-primary)" }}>{role.required_match_rate}%</span>
         </div>
         <div className="rp-rate-row">
           <span className="rp-rate-lbl">Preferred Skills</span>
-          <AnimatedBar value={role.preferred_match_rate} color="#16a34a" delay={160} />
-          <span className="rp-rate-pct" style={{ color: "#16a34a" }}>{role.preferred_match_rate}%</span>
+          <AnimatedBar value={role.preferred_match_rate} color="var(--color-success)" delay={160} />
+          <span className="rp-rate-pct" style={{ color: "var(--color-success)" }}>{role.preferred_match_rate}%</span>
         </div>
       </div>
 
@@ -255,36 +240,14 @@ function RoleCard({ role, index }) {
   );
 }
 
-function ResumePreview({ text, skills }) {
-  const [open, setOpen] = useState(false);
-  const highlighted = useMemo(() => highlightResumeText(text, skills), [text, skills]);
-
-  if (!text) return null;
-
-  return (
-    <div className="rp-card rp-preview-card">
-      <button className="rp-preview-toggle" onClick={() => setOpen((o) => !o)}>
-        <span className="rp-section-title">Resume Preview With Matched Skills</span>
-        <svg
-          width="14" height="14" viewBox="0 0 14 14" fill="none"
-          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
-        >
-          <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-      {open && <div className="rp-preview-body">{highlighted}</div>}
-    </div>
-  );
-}
-
 export default function ResultsPage({ data, onAnalyzeNew }) {
-  const { analysis, filename, formatting_check, resume_text } = data;
+  const { analysis, filename, formatting_check } = data;
   const fileInputRef = useRef(null);
 
   const sMeta = scoreMeta(analysis.ats_score);
 
   return (
-    <div className="rp">
+    <div className="rp" style={{ "--accent": sMeta.color }}>
       <header className="rp-bar">
         <div className="rp-bar-file">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -321,16 +284,13 @@ export default function ResultsPage({ data, onAnalyzeNew }) {
 
       <div className="rp-body">
         <FormattingCheck formatting={formatting_check} />
-        <HighImpactBanner skills={analysis.high_impact_missing_skills} />
-        <CrossRoleSkills skills={analysis.cross_role_skills} />
+        <FuzzyCorrections corrections={analysis.fuzzy_corrections} />
 
         <div className="rp-role-list">
           {analysis.top_roles.map((role, i) => (
             <RoleCard key={role.role_title} role={role} index={i} />
           ))}
         </div>
-
-        <ResumePreview text={resume_text} skills={analysis.found_skills} />
       </div>
     </div>
   );
