@@ -32,7 +32,9 @@ def upload_resume(file: UploadFile = File(...), priority: str = Form(None)):
             )
 
         result = analyze_resume(text, priority=priority)
-        formatting = analyze_resume_formatting(file.file, file.filename, text)
+        formatting = analyze_resume_formatting(
+            file.file, file.filename, text, result["total_skills_found"]
+        )
 
         return {
             "filename": file.filename,
@@ -41,7 +43,6 @@ def upload_resume(file: UploadFile = File(...), priority: str = Form(None)):
                 "total_skills_found": result["total_skills_found"],
                 "found_skills": result["found_skills"],
                 "top_roles": result["top_roles"],
-                "fuzzy_corrections": result["fuzzy_corrections"],
                 "priority_applied": result["priority_applied"],
             },
             "formatting_check": formatting,

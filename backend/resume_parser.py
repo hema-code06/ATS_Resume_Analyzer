@@ -5,20 +5,6 @@ from docx import Document
 EMAIL_PATTERN = re.compile(r"[a-z0-9_.+-]+@[a-z0-9-]+\.[a-z0-9-.]+")
 PHONE_PATTERN = re.compile(r"(\+?\d[\d\-\s\(\)]{8,}\d)")
 
-SECTION_KEYWORDS = {
-    "summary": ["summary", "objective", "profile"],
-    "skills": ["skills", "technical skills", "core competencies"],
-    "experience": [
-        "experience",
-        "work experience",
-        "employment",
-        "projects",
-        "project experience",
-    ],
-    "education": ["education", "academic background"],
-    "certifications": ["certification", "certifications", "licenses"],
-}
-
 
 def clean_text(text: str) -> str:
     if not text:
@@ -68,15 +54,6 @@ def extract_resume_text(file, filename: str) -> str:
     raise ValueError("Unsupported file format. Upload PDF or DOCX only.")
 
 
-def detect_sections(text: str) -> dict:
-    found = {}
-    for section, keywords in SECTION_KEYWORDS.items():
-        found[section] = any(
-            re.search(r"\b" + re.escape(k) + r"\b", text) for k in keywords
-        )
-    return found
-
-
 def detect_contact_info(text: str) -> dict:
     return {
         "has_email": bool(EMAIL_PATTERN.search(text)),
@@ -116,7 +93,7 @@ def analyze_docx_structure(file) -> dict:
     }
 
 
-def analyze_resume_formatting(file, filename: str, text: str) -> dict:
+def analyze_resume_formatting(file, filename: str, text: str, skill_count: int) -> dict:
     filename = filename.lower()
 
     if filename.endswith(".pdf"):
@@ -126,8 +103,26 @@ def analyze_resume_formatting(file, filename: str, text: str) -> dict:
     else:
         raise ValueError("Unsupported file format. Upload PDF or DOCX only.")
 
-    result["sections"] = detect_sections(text)
     result["contact_info"] = detect_contact_info(text)
+
+    density_pct = (
+        round((skill_count / result["word_count"]) * 100, 1)
+        if result["word_count"]
+        else 0.0
+    )
+    if density_pct >= 6:
+        density_label = "Strong"
+    elif density_pct >= 3:
+        density_label = "Moderate"
+    else:
+        density_label = "Low"
+
+    result["skill_density"] = {
+        "percentage": density_pct,
+        "label": density_label,
+        "skills_found": skill_count,
+        "word_count": result["word_count"],
+    }
 
     warnings = []
 
@@ -147,11 +142,9 @@ def analyze_resume_formatting(file, filename: str, text: str) -> dict:
         warnings.append(
             "Very little extractable text - the resume may be too sparse or mostly image-based."
         )
-
-    missing_sections = [s for s, present in result["sections"].items() if not present]
-    if missing_sections:
+    if density_pct < 3:
         warnings.append(
-            f"Missing common resume sections: {', '.join(missing_sections)}."
+            "Low skill keyword density - consider naming more specific tools and technologies."
         )
     if not result["contact_info"]["has_email"]:
         warnings.append("No email address detected.")

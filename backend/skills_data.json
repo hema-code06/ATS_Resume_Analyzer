@@ -1897,7 +1897,6 @@
   "matchFairness": {
     "curveExponent": 0.75,
     "partialCreditRatio": 0.5,
-    "fuzzyCutoff": 0.8,
     "priorityBoost": 20
   }
 }

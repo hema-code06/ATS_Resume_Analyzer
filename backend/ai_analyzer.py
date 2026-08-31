@@ -1,6 +1,5 @@
 import re
 import json
-import difflib
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -44,24 +43,13 @@ def build_cluster_lookup() -> Dict[str, int]:
     return lookup
 
 
-def build_single_word_skills(skill_map: Dict[str, str]) -> Dict[str, str]:
-    return {
-        k: v
-        for k, v in skill_map.items()
-        if " " not in k and "/" not in k and len(k) >= 5
-    }
-
-
 SKILL_MAP = build_skill_map()
 TIER_LOOKUP = build_tier_lookup()
 CLUSTER_LOOKUP = build_cluster_lookup()
-SINGLE_WORD_SKILLS = build_single_word_skills(SKILL_MAP)
-SINGLE_WORD_CANDIDATES = list(SINGLE_WORD_SKILLS.keys())
 
 TIER_WEIGHT = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
 PARTIAL_CREDIT_RATIO = CONFIG.get("matchFairness", {}).get("partialCreditRatio", 0.5)
 CURVE_EXPONENT = CONFIG.get("matchFairness", {}).get("curveExponent", 0.75)
-FUZZY_CUTOFF = CONFIG.get("matchFairness", {}).get("fuzzyCutoff", 0.85)
 PRIORITY_BOOST = CONFIG.get("matchFairness", {}).get("priorityBoost", 20)
 
 
@@ -72,34 +60,7 @@ def normalize_text(text: str) -> str:
     return text.strip()
 
 
-def fuzzy_match_skills(normalized_text: str) -> Tuple[set, List[Dict]]:
-    raw_words = re.findall(r"[a-z0-9\+\#\.\-]{4,}", normalized_text)
-    words = set(w.strip(".-") for w in raw_words if len(w.strip(".-")) >= 4)
-    extra = set()
-    corrections = []
-
-    for word in words:
-        if word in SINGLE_WORD_SKILLS:
-            continue
-
-        candidates = difflib.get_close_matches(
-            word, SINGLE_WORD_CANDIDATES, n=3, cutoff=FUZZY_CUTOFF
-        )
-
-        for candidate in candidates:
-            if word[0] != candidate[0]:
-                continue
-            if abs(len(word) - len(candidate)) > 2:
-                continue
-            canonical = SINGLE_WORD_SKILLS[candidate]
-            extra.add(canonical)
-            corrections.append({"typo": word, "matched_to": canonical})
-            break
-
-    return extra, corrections
-
-
-def detect_all_skills(text: str) -> Tuple[List[str], List[Dict]]:
+def detect_all_skills(text: str) -> List[str]:
     normalized = normalize_text(text)
     exact = set()
 
@@ -107,8 +68,7 @@ def detect_all_skills(text: str) -> Tuple[List[str], List[Dict]]:
         if re.search(r"\b" + re.escape(variant) + r"\b", normalized):
             exact.add(canonical)
 
-    extra, corrections = fuzzy_match_skills(normalized)
-    return sorted(exact | extra), corrections
+    return sorted(exact)
 
 
 def filter_low_value_skills(skills: List[str]) -> List[str]:
@@ -179,9 +139,7 @@ def calculate_role_match(found_skills: List[str], priority: str = None) -> List[
         preferred = role["preferredSkills"]
 
         req_rate_raw, req_matched, req_missing = weighted_skill_match(required, found)
-        pref_rate_raw, pref_matched, pref_missing = weighted_skill_match(
-            preferred, found
-        )
+        pref_rate_raw, pref_matched, pref_missing = weighted_skill_match(preferred, found)
 
         all_matched = sorted(
             set(req_matched) | set(pref_matched),
@@ -198,11 +156,7 @@ def calculate_role_match(found_skills: List[str], priority: str = None) -> List[
         if priority_norm:
             title_lower = role["title"].lower()
             category_lower = role["category"].lower()
-            if (
-                priority_norm == title_lower
-                or priority_norm == category_lower
-                or priority_norm in title_lower
-            ):
+            if priority_norm == title_lower or priority_norm == category_lower or priority_norm in title_lower:
                 rank_score += PRIORITY_BOOST
                 is_priority = True
 
@@ -294,7 +248,7 @@ def generate_smart_insights(
 
 
 def analyze_resume(text: str, priority: str = None) -> Dict:
-    all_found_skills, fuzzy_corrections = detect_all_skills(text)
+    all_found_skills = detect_all_skills(text)
     scored_skills = filter_low_value_skills(all_found_skills)
 
     top_roles = calculate_role_match(all_found_skills, priority=priority)
@@ -307,6 +261,5 @@ def analyze_resume(text: str, priority: str = None) -> Dict:
         "found_skills": scored_skills,
         "top_roles": top_roles,
         "feedback": feedback,
-        "fuzzy_corrections": fuzzy_corrections,
         "priority_applied": priority,
     }
