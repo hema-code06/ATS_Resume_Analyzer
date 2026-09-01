@@ -70,7 +70,7 @@ function App() {
       )}
 
       {currentPage === "results" && analysisData && (
-        <ResultsPage data={analysisData} onAnalyzeNew={handleAnalyzeNew} />
+        <ResultsPage data={analysisData} onAnalyzeNew={handleAnalyzeNew} isLoading={isLoading} />
       )}
     </div>
   );
