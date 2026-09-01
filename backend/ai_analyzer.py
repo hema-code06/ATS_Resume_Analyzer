@@ -43,9 +43,21 @@ def build_cluster_lookup() -> Dict[str, int]:
     return lookup
 
 
+def build_role_alias_lookup() -> Dict[str, str]:
+    lookup = {}
+    for role in CONFIG["jobRoles"]:
+        lookup[role["title"].lower().strip()] = role["title"]
+    for canonical_title, aliases in CONFIG.get("roleAliases", {}).items():
+        for alias in aliases:
+            lookup[alias.lower().strip()] = canonical_title
+    return lookup
+
+
 SKILL_MAP = build_skill_map()
 TIER_LOOKUP = build_tier_lookup()
 CLUSTER_LOOKUP = build_cluster_lookup()
+ROLE_ALIAS_LOOKUP = build_role_alias_lookup()
+SENIORITY_WORDS = CONFIG.get("matchFairness", {}).get("seniorityWords", [])
 
 TIER_WEIGHT = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
 PARTIAL_CREDIT_RATIO = CONFIG.get("matchFairness", {}).get("partialCreditRatio", 0.5)
@@ -127,19 +139,59 @@ def weighted_skill_match(
     return rate, matched, missing
 
 
-def calculate_role_match(found_skills: List[str], priority: str = None) -> List[Dict]:
+def strip_seniority_words(text: str) -> str:
+    words = text.split()
+    filtered = [w for w in words if w not in SENIORITY_WORDS]
+    return " ".join(filtered).strip()
+
+
+def resolve_priority_skills(priority: str) -> set:
+    if not priority:
+        return set()
+    normalized = normalize_text(priority)
+    matched = set()
+    for variant, canonical in SKILL_MAP.items():
+        if re.search(r"\b" + re.escape(variant) + r"\b", normalized):
+            matched.add(canonical)
+    return matched
+
+
+def resolve_priority_role(priority: str) -> str:
+    if not priority:
+        return None
+    core = strip_seniority_words(priority.strip().lower())
+    if core in ROLE_ALIAS_LOOKUP:
+        return ROLE_ALIAS_LOOKUP[core]
+    for alias, title in ROLE_ALIAS_LOOKUP.items():
+        if len(core) < 2 or len(alias) < 2:
+            continue
+        if re.search(r"\b" + re.escape(alias) + r"\b", core) or re.search(
+            r"\b" + re.escape(core) + r"\b", alias
+        ):
+            return title
+    return None
+
+
+def calculate_role_match(
+    found_skills: List[str], priority: str = None
+) -> Tuple[List[Dict], Dict]:
     weights = CONFIG["scoringWeights"]
     found = set(s.lower().strip() for s in found_skills)
     priority_norm = priority.strip().lower() if priority else None
+    priority_skills = resolve_priority_skills(priority) if priority else set()
+    priority_role = resolve_priority_role(priority) if priority else None
 
     results = []
+    matched_roles = []
 
     for role in CONFIG["jobRoles"]:
         required = role["requiredSkills"]
         preferred = role["preferredSkills"]
 
         req_rate_raw, req_matched, req_missing = weighted_skill_match(required, found)
-        pref_rate_raw, pref_matched, pref_missing = weighted_skill_match(preferred, found)
+        pref_rate_raw, pref_matched, pref_missing = weighted_skill_match(
+            preferred, found
+        )
 
         all_matched = sorted(
             set(req_matched) | set(pref_matched),
@@ -156,9 +208,24 @@ def calculate_role_match(found_skills: List[str], priority: str = None) -> List[
         if priority_norm:
             title_lower = role["title"].lower()
             category_lower = role["category"].lower()
-            if priority_norm == title_lower or priority_norm == category_lower or priority_norm in title_lower:
+            role_skills = set(s.lower().strip() for s in required + preferred)
+
+            if (
+                priority_norm == title_lower
+                or priority_norm == category_lower
+                or priority_norm in title_lower
+            ):
                 rank_score += PRIORITY_BOOST
                 is_priority = True
+                matched_roles.append(role["title"])
+            elif priority_role == role["title"]:
+                rank_score += PRIORITY_BOOST
+                is_priority = True
+                matched_roles.append(role["title"])
+            elif priority_skills & role_skills:
+                rank_score += PRIORITY_BOOST * 0.5
+                is_priority = True
+                matched_roles.append(role["title"])
 
         results.append(
             {
@@ -181,7 +248,18 @@ def calculate_role_match(found_skills: List[str], priority: str = None) -> List[
     for role in top_roles:
         del role["_rank_score"]
 
-    return top_roles
+    priority_status = None
+    if priority:
+        top_titles = set(r["role_title"] for r in top_roles)
+        priority_status = {
+            "input": priority,
+            "recognized": bool(matched_roles),
+            "matched_skills": sorted(priority_skills),
+            "matched_roles": sorted(set(matched_roles)),
+            "in_top_results": bool(set(matched_roles) & top_titles),
+        }
+
+    return top_roles, priority_status
 
 
 def calculate_ats_score(found_skills: List[str]) -> int:
@@ -251,7 +329,9 @@ def analyze_resume(text: str, priority: str = None) -> Dict:
     all_found_skills = detect_all_skills(text)
     scored_skills = filter_low_value_skills(all_found_skills)
 
-    top_roles = calculate_role_match(all_found_skills, priority=priority)
+    top_roles, priority_status = calculate_role_match(
+        all_found_skills, priority=priority
+    )
     ats_score = calculate_ats_score(scored_skills)
     feedback = generate_smart_insights(ats_score, top_roles, scored_skills)
 
@@ -261,5 +341,5 @@ def analyze_resume(text: str, priority: str = None) -> Dict:
         "found_skills": scored_skills,
         "top_roles": top_roles,
         "feedback": feedback,
-        "priority_applied": priority,
+        "priority_applied": priority_status,
     }

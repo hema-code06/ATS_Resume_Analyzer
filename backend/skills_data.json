@@ -1897,6 +1897,230 @@
   "matchFairness": {
     "curveExponent": 0.75,
     "partialCreditRatio": 0.5,
-    "priorityBoost": 20
+    "priorityBoost": 20,
+    "seniorityWords": [
+      "junior",
+      "senior",
+      "sr",
+      "jr",
+      "lead",
+      "principal",
+      "staff",
+      "associate",
+      "entry-level",
+      "entry level",
+      "intern",
+      "trainee",
+      "chief",
+      "head"
+    ]
+  },
+  "roleAliases": {
+    "Frontend Developer": [
+      "React Developer",
+      "UI Developer",
+      "Web Developer",
+      "Vue Developer",
+      "Angular Developer",
+      "Client-side Developer"
+    ],
+    "Backend Developer": [
+      "Python Developer",
+      "Node Developer",
+      "Java Developer",
+      "API Developer",
+      "Server-side Developer",
+      "PHP Developer"
+    ],
+    "Full Stack Developer": [
+      "MERN Developer",
+      "MEAN Developer",
+      "Software Engineer",
+      "Software Developer",
+      "Web Developer",
+      "Application Developer"
+    ],
+    "Data Scientist": [
+      "ML Engineer",
+      "Machine Learning Engineer",
+      "AI Engineer",
+      "Data Analyst",
+      "AI Developer",
+      "NLP Engineer"
+    ],
+    "DevOps Engineer": [
+      "Site Reliability Engineer",
+      "SRE",
+      "Cloud Engineer",
+      "Infrastructure Engineer",
+      "Platform Engineer",
+      "Systems Engineer"
+    ],
+    "Mobile Developer": [
+      "iOS Developer",
+      "Android Developer",
+      "App Developer",
+      "React Native Developer",
+      "Flutter Developer"
+    ],
+    "UI/UX Designer": [
+      "Product Designer",
+      "UX Designer",
+      "UI Designer",
+      "Interaction Designer",
+      "User Experience Designer"
+    ],
+    "Product Manager": [
+      "PM",
+      "Product Owner",
+      "Associate Product Manager",
+      "Technical Product Manager"
+    ],
+    "Digital Marketing Specialist": [
+      "Marketing Specialist",
+      "SEO Specialist",
+      "Growth Marketer",
+      "Performance Marketer",
+      "PPC Specialist",
+      "Marketing Executive"
+    ],
+    "Content Writer": [
+      "Copywriter",
+      "Content Creator",
+      "Blog Writer",
+      "Technical Writer",
+      "Content Strategist"
+    ],
+    "Business Analyst": [
+      "BA",
+      "Systems Analyst",
+      "Process Analyst",
+      "Business Systems Analyst"
+    ],
+    "Human Resources Manager": [
+      "HR Manager",
+      "HR Generalist",
+      "People Ops Manager",
+      "Talent Manager",
+      "HR Business Partner",
+      "Recruiter"
+    ],
+    "Financial Analyst": [
+      "Finance Analyst",
+      "Investment Analyst",
+      "Corporate Finance Analyst",
+      "FP&A Analyst"
+    ],
+    "Sales Executive": [
+      "Sales Representative",
+      "Account Executive",
+      "Business Development Executive",
+      "Sales Associate",
+      "BDR"
+    ],
+    "Customer Success Manager": [
+      "CSM",
+      "Client Success Manager",
+      "Customer Support Manager",
+      "Account Manager"
+    ],
+    "Project Manager": [
+      "Program Manager",
+      "Delivery Manager",
+      "Scrum Master",
+      "PMP"
+    ],
+    "Graphic Designer": [
+      "Visual Designer",
+      "Creative Designer",
+      "Brand Designer",
+      "Print Designer"
+    ],
+    "Cybersecurity Analyst": [
+      "Security Analyst",
+      "InfoSec Analyst",
+      "SOC Analyst",
+      "Information Security Analyst",
+      "Security Engineer"
+    ],
+    "QA Engineer": [
+      "Test Engineer",
+      "QA Tester",
+      "SDET",
+      "Quality Analyst",
+      "Automation Tester",
+      "Software Tester"
+    ],
+    "Operations Manager": [
+      "Ops Manager",
+      "Operations Lead",
+      "General Manager"
+    ],
+    "Accountant": [
+      "Bookkeeper",
+      "Accounting Associate",
+      "Staff Accountant",
+      "Tax Accountant",
+      "Financial Accountant"
+    ],
+    "Registered Nurse": [
+      "Nurse",
+      "RN",
+      "Staff Nurse",
+      "Clinical Nurse",
+      "Nurse Specialist",
+      "Nurse Practitioner",
+      "Charge Nurse"
+    ],
+    "Teacher": [
+      "Educator",
+      "Instructor",
+      "Tutor",
+      "Faculty",
+      "Schoolteacher",
+      "Lecturer"
+    ],
+    "Civil Engineer": [
+      "Structural Engineer",
+      "Construction Engineer",
+      "Site Engineer"
+    ],
+    "Social Media Manager": [
+      "Community Manager",
+      "Social Media Specialist",
+      "Social Media Coordinator"
+    ],
+    "Legal Assistant": [
+      "Paralegal",
+      "Law Clerk",
+      "Legal Clerk",
+      "Legal Secretary",
+      "Junior Lawyer",
+      "Law Associate",
+      "Legal Associate",
+      "Attorney",
+      "Lawyer"
+    ],
+    "Supply Chain Coordinator": [
+      "Logistics Coordinator",
+      "Supply Chain Analyst",
+      "Procurement Coordinator"
+    ],
+    "Video Editor": [
+      "Film Editor",
+      "Motion Graphics Editor",
+      "Post-Production Editor"
+    ],
+    "Event Planner": [
+      "Wedding Planner",
+      "Event Coordinator",
+      "Event Manager"
+    ],
+    "Research Scientist": [
+      "R&D Scientist",
+      "Lab Scientist",
+      "Research Associate",
+      "Laboratory Technician"
+    ]
   }
 }
