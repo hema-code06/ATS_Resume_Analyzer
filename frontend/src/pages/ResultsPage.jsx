@@ -140,7 +140,6 @@ function RoleCard({ role, index }) {
     <div className="rp-card rp-role-card" style={{ animationDelay: `${index * 90}ms` }}>
       <div className="rp-badge-row">
         <span className="rp-rank-badge">#{index + 1} Match</span>
-        {role.prioritized && <span className="rp-priority-badge">Prioritized</span>}
       </div>
       <h2 className="rp-role-name">{role.role_title}</h2>
       <p className="rp-role-cat">{role.role_category}</p>

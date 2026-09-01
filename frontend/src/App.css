@@ -44,3 +44,25 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
 }
+
+.app {
+  width: 100%;
+  height: 100%;
+}
+
+.up,
+.rp {
+  animation: app-page-fade 0.4s ease both;
+}
+
+@keyframes app-page-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

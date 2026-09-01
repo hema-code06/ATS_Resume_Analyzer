@@ -2,91 +2,97 @@
 
 .up {
   min-height: 100vh;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif !important;
   color: var(--color-text);
-  padding-bottom: 40px;
+  padding: 40px 20px;
 }
 
 .up-headline {
   text-align: center;
-  font-size: 3rem;
+  font-size: 2.9rem;
   font-weight: 700;
-  line-height: 1.1;
-  margin-top: 70px;
-  margin-bottom: 36px;
+  line-height: 1.15;
+  margin-bottom: 40px;
   color: var(--color-text);
-}
-
-.up-priority {
-  width: 100%;
-  max-width: 620px;
-  margin: 0 auto 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.up-priority-label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-}
-
-.up-priority-input {
-  width: 100%;
-  padding: 12px 18px;
-  font-size: 0.95rem;
-  font-family: inherit;
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  border-radius: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.up-priority-input::placeholder {
-  color: var(--color-text-faint);
-}
-
-.up-priority-input:focus {
-  border-color: var(--color-primary);
-}
-
-.up-priority-input:disabled {
-  opacity: 0.6;
 }
 
 .up-zone {
   width: 100%;
   max-width: 620px;
-  margin: 0 auto;
   padding: 60px 40px;
   background: var(--color-surface);
   border: 2px dashed var(--color-border);
   border-radius: var(--radius-card);
   text-align: center;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
   box-shadow: var(--shadow-card);
 }
 
 .up-zone:hover {
   border-color: var(--color-primary);
   transform: translateY(-3px);
+  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.05), 0 14px 30px rgba(15, 23, 42, 0.08);
 }
 
 .up-zone--drag {
   border-color: var(--color-primary);
   background: var(--color-primary-light);
-  transform: scale(1.01);
+  transform: scale(1.015);
+}
+
+.up-zone--loading {
+  cursor: default;
+}
+
+.up-zone--loading:hover {
+  transform: none;
+  box-shadow: var(--shadow-card);
+}
+
+.up-zone-icon {
+  color: var(--color-primary);
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.up-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.up-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: up-spin 0.8s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes up-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .up-loading-title {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--color-primary);
+}
+
+.up-loading-sub {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
 }
 
 .up-zone-title {
@@ -130,13 +136,8 @@
     padding: 90px 60px;
   }
 
-  .up-priority {
-    max-width: 780px;
-  }
-
   .up-headline {
     font-size: 3.5rem;
-    margin-top: 80px;
   }
 }
 
@@ -144,16 +145,11 @@
   .up-zone {
     max-width: 660px;
   }
-
-  .up-priority {
-    max-width: 660px;
-  }
 }
 
 @media (max-width: 1024px) {
   .up-headline {
-    font-size: 2.6rem;
-    margin-top: 60px;
+    font-size: 2.5rem;
     margin-bottom: 32px;
   }
 
@@ -161,33 +157,23 @@
     max-width: 580px;
     padding: 55px 36px;
   }
-
-  .up-priority {
-    max-width: 580px;
-  }
 }
 
 @media (max-width: 768px) {
-  .up-headline {
-    font-size: 2.2rem;
-    margin-top: 36px;
-    margin-bottom: 28px;
-    line-height: 1.2;
-    padding: 0 16px;
+  .up {
+    padding: 28px 16px;
   }
 
-  .up-priority {
-    max-width: 100%;
-    margin: 0 16px 20px;
-    width: auto;
+  .up-headline {
+    font-size: 2.1rem;
+    margin-bottom: 28px;
+    line-height: 1.25;
   }
 
   .up-zone {
     max-width: 100%;
     padding: 50px 24px;
     border-radius: 22px;
-    margin: 0 16px;
-    width: auto;
   }
 
   .up-zone-sub {
@@ -202,25 +188,13 @@
 
 @media (max-width: 480px) {
   .up-headline {
-    font-size: 1.85rem;
-    margin-top: 24px;
+    font-size: 1.75rem;
     margin-bottom: 20px;
-    padding: 0 12px;
-  }
-
-  .up-priority {
-    margin: 0 12px 18px;
-  }
-
-  .up-priority-input {
-    padding: 10px 14px;
-    font-size: 0.88rem;
   }
 
   .up-zone {
     padding: 38px 16px;
     border-radius: 18px;
-    margin: 0 12px;
   }
 
   .up-zone-title {

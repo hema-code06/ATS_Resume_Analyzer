@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from resume_parser import extract_resume_text, analyze_resume_formatting
 from ai_analyzer import analyze_resume
@@ -19,7 +19,7 @@ def health_check():
 
 
 @app.post("/upload")
-def upload_resume(file: UploadFile = File(...), priority: str = Form(None)):
+def upload_resume(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="File is required")
 
@@ -31,7 +31,7 @@ def upload_resume(file: UploadFile = File(...), priority: str = Form(None)):
                 status_code=400, detail="Could not extract text from file!!"
             )
 
-        result = analyze_resume(text, priority=priority)
+        result = analyze_resume(text)
         formatting = analyze_resume_formatting(
             file.file, file.filename, text, result["total_skills_found"]
         )
@@ -43,7 +43,6 @@ def upload_resume(file: UploadFile = File(...), priority: str = Form(None)):
                 "total_skills_found": result["total_skills_found"],
                 "found_skills": result["found_skills"],
                 "top_roles": result["top_roles"],
-                "priority_applied": result["priority_applied"],
             },
             "formatting_check": formatting,
             "feedback": result["feedback"],

@@ -15,7 +15,7 @@ function App() {
     fetch(`${API_URL}/`).catch(() => { });
   }, []);
 
-  const handleUpload = async (file, priority) => {
+  const handleUpload = async (file) => {
     if (!file) return;
 
     const validTypes = [
@@ -32,9 +32,6 @@ function App() {
 
     const formData = new FormData();
     formData.append("file", file);
-    if (priority?.trim()) {
-      formData.append("priority", priority.trim());
-    }
 
     try {
       const response = await fetch(`${API_URL}/upload`, {
