@@ -64,7 +64,7 @@ def detect_all_skills(text: str) -> List[str]:
     exact = set()
 
     for variant, canonical in SKILL_MAP.items():
-        if re.search(r"\b" + re.escape(variant) + r"\b", normalized):
+        if re.search(r"(?<![a-z0-9\.\-\/])" + re.escape(variant) + r"(?![a-z0-9\.\-\/])", normalized):
             exact.add(canonical)
 
     return sorted(exact)
@@ -233,6 +233,28 @@ def generate_smart_insights(
             "medium_value_count": len(medium_skills),
             "total_skills": len(found_skills),
         },
+    }
+
+
+def analyze_against_job_description(resume_text: str, jd_text: str) -> Dict:
+    resume_skills = set(s.lower().strip() for s in detect_all_skills(resume_text))
+    jd_skills = detect_all_skills(jd_text)
+
+    if not jd_skills:
+        return {
+            "jd_skills_detected": [],
+            "match_rate": 0.0,
+            "skills_matched": [],
+            "skills_missing": [],
+        }
+
+    rate_raw, matched, missing = weighted_skill_match(jd_skills, resume_skills)
+
+    return {
+        "jd_skills_detected": jd_skills,
+        "match_rate": round(apply_fairness_curve(rate_raw), 1),
+        "skills_matched": sorted(matched, key=get_tier_weight, reverse=True),
+        "skills_missing": sorted(missing, key=get_tier_weight, reverse=True),
     }
 
 

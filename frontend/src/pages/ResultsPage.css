@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 
 .rp {
   height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--color-bg);
-  font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif !important;
+  font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif !important;
   color: var(--color-text);
   position: relative;
 }
@@ -142,11 +142,24 @@
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    opacity 0.2s;
 }
 
 .rp-bar-btn:hover:not(:disabled) {
   background: #372da3;
+  transform: translateY(-1px);
+}
+
+.rp-bar-btn--ghost {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.rp-bar-btn--ghost:hover:not(:disabled) {
+  background: var(--color-primary-border);
   transform: translateY(-1px);
 }
 
@@ -173,12 +186,17 @@
   border: 1px solid var(--color-border);
   border-radius: 16px;
   box-shadow: var(--shadow-card);
-  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .rp-role-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.05), 0 14px 30px rgba(15, 23, 42, 0.07);
+  box-shadow:
+    0 4px 6px rgba(15, 23, 42, 0.05),
+    0 14px 30px rgba(15, 23, 42, 0.07);
   border-color: var(--color-primary-border);
 }
 
@@ -225,7 +243,6 @@
 .rp-fmt-chip--yes {
   color: var(--color-success);
 }
-
 .rp-fmt-chip--no {
   color: var(--color-danger);
 }
@@ -265,7 +282,6 @@
     opacity: 0;
     transform: translateY(10px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -405,11 +421,9 @@
 .rp-sbt--green {
   color: var(--color-success);
 }
-
 .rp-sbt--red {
   color: var(--color-danger);
 }
-
 .rp-sbt--amber {
   color: var(--color-warning);
 }
@@ -433,19 +447,16 @@
   color: var(--color-success);
   border: 1px solid var(--color-success-border);
 }
-
 .rp-tag--red {
   background: var(--color-danger-light);
   color: var(--color-danger);
   border: 1px solid var(--color-danger-border);
 }
-
 .rp-tag--amber {
   background: var(--color-warning-light);
   color: var(--color-warning);
   border: 1px solid var(--color-warning-border);
 }
-
 .rp-tag--more {
   background: var(--color-bg);
   color: var(--color-text-muted);
@@ -455,7 +466,9 @@
 .rp-tag-more-btn {
   cursor: pointer;
   border: none;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .rp-tag-more-btn:hover {
@@ -485,7 +498,15 @@
 @media (max-width: 640px) {
   .rp-bar {
     padding: 10px 16px;
-    gap: 10px;
+    gap: 8px;
+  }
+
+  .rp-bar-btn--ghost span {
+    display: none;
+  }
+
+  .rp-bar-btn--ghost {
+    padding: 8px;
   }
 
   .rp-bar-score-track {

@@ -1,9 +1,13 @@
 import re
+import io
 import pdfplumber
+import pytesseract
+from PIL import Image
 from docx import Document
 
 EMAIL_PATTERN = re.compile(r"[a-z0-9_.+-]+@[a-z0-9-]+\.[a-z0-9-.]+")
 PHONE_PATTERN = re.compile(r"(\+?\d[\d\-\s\(\)]{8,}\d)")
+IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png")
 
 
 def clean_text(text: str) -> str:
@@ -39,6 +43,17 @@ def extract_text_from_docx(file) -> str:
         raise RuntimeError(f"Error processing DOCX: {e}") from e
 
 
+def extract_text_from_image(file) -> str:
+    try:
+        file.seek(0)
+        image = Image.open(io.BytesIO(file.read()))
+        text = pytesseract.image_to_string(image)
+        return clean_text(text)
+
+    except Exception as e:
+        raise RuntimeError(f"Error processing image: {e}") from e
+
+
 def extract_resume_text(file, filename: str) -> str:
     if not filename:
         raise ValueError("Filename is required")
@@ -51,7 +66,10 @@ def extract_resume_text(file, filename: str) -> str:
     if filename.endswith(".docx"):
         return extract_text_from_docx(file)
 
-    raise ValueError("Unsupported file format. Upload PDF or DOCX only.")
+    if filename.endswith(IMAGE_EXTENSIONS):
+        return extract_text_from_image(file)
+
+    raise ValueError("Unsupported file format. Upload PDF, DOCX, JPG, or PNG only.")
 
 
 def detect_contact_info(text: str) -> dict:
@@ -67,7 +85,9 @@ def analyze_pdf_structure(file) -> dict:
         page_count = len(pdf.pages)
         has_images = any(len(page.images) > 0 for page in pdf.pages)
         has_tables = any(len(page.extract_tables()) > 0 for page in pdf.pages)
-        word_count = sum(len((page.extract_text() or "").split()) for page in pdf.pages)
+        word_count = sum(
+            len((page.extract_text() or "").split()) for page in pdf.pages
+        )
 
     return {
         "page_count": page_count,
@@ -95,21 +115,25 @@ def analyze_docx_structure(file) -> dict:
 
 def analyze_resume_formatting(file, filename: str, text: str, skill_count: int) -> dict:
     filename = filename.lower()
+    is_image_resume = filename.endswith(IMAGE_EXTENSIONS)
 
     if filename.endswith(".pdf"):
         result = analyze_pdf_structure(file)
     elif filename.endswith(".docx"):
         result = analyze_docx_structure(file)
+    elif is_image_resume:
+        result = {
+            "page_count": 1,
+            "word_count": len(text.split()),
+            "has_images": True,
+            "has_tables": False,
+        }
     else:
-        raise ValueError("Unsupported file format. Upload PDF or DOCX only.")
+        raise ValueError("Unsupported file format. Upload PDF, DOCX, JPG, or PNG only.")
 
     result["contact_info"] = detect_contact_info(text)
 
-    density_pct = (
-        round((skill_count / result["word_count"]) * 100, 1)
-        if result["word_count"]
-        else 0.0
-    )
+    density_pct = round((skill_count / result["word_count"]) * 100, 1) if result["word_count"] else 0.0
     if density_pct >= 6:
         density_label = "Strong"
     elif density_pct >= 3:
@@ -126,7 +150,13 @@ def analyze_resume_formatting(file, filename: str, text: str, skill_count: int) 
 
     warnings = []
 
-    if result["has_images"]:
+    if is_image_resume:
+        warnings.append(
+            "This resume was submitted as an image file. Most real ATS systems cannot "
+            "extract any text from image-based resumes at all - strongly consider "
+            "submitting as PDF or DOCX instead."
+        )
+    elif result["has_images"]:
         warnings.append(
             "Contains embedded images or graphics - many ATS systems can't read text inside images."
         )
