@@ -50,11 +50,6 @@
   margin: 0;
 }
 
-.jdm-subtitle {
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
-  margin: 4px 0 0;
-}
 
 .jdm-close {
   background: var(--color-bg);

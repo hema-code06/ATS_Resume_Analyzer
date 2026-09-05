@@ -328,19 +328,33 @@ export default function ResultsPage({
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path
-              d="M3 1h6l3 3v9H3V1z"
+              d="M2 4.5h7.5v6H2v-6z"
               stroke="currentColor"
-              strokeWidth="1.4"
+              strokeWidth="1.3"
               strokeLinejoin="round"
             />
             <path
-              d="M5 6h4M5 8.5h4M5 3.5h2"
+              d="M4.5 4.5V3.25h3v1.25"
+              stroke="currentColor"
+              strokeWidth="1.3"
+              strokeLinecap="round"
+            />
+            <path d="M2 6.5h7.5" stroke="currentColor" strokeWidth="1.2" />
+            <circle
+              cx="10.5"
+              cy="9.5"
+              r="2"
+              stroke="currentColor"
+              strokeWidth="1.3"
+            />
+            <path
+              d="M12 11l1.2 1.2"
               stroke="currentColor"
               strokeWidth="1.3"
               strokeLinecap="round"
             />
           </svg>
-          <span>Match Job Description</span>
+          <span>Match JD</span>
         </button>
         <button
           className="rp-bar-btn"
