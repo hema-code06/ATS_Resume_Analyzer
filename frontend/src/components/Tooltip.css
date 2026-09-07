@@ -1,21 +1,6 @@
 .tt-wrap {
   position: relative;
   display: inline-flex;
-  align-items: center;
-  color: var(--color-text-faint);
-  cursor: help;
-  outline: none;
-  margin-left: 2px;
-  transition: color 0.15s ease;
-}
-
-.tt-wrap:hover,
-.tt-wrap:focus {
-  color: var(--color-primary);
-}
-
-.tt-icon {
-  display: block;
 }
 
 .tt-bubble {
