@@ -2,40 +2,52 @@ import os
 import json
 from typing import Dict, List
 
-try:
-    from anthropic import Anthropic
-except ImportError:
-    Anthropic = None
+from ai_analyzer import get_tier_weight, CLUSTER_LOOKUP, CONFIG
 
-MODEL = "claude-haiku-4-5-20251001"
+try:
+    from groq import Groq
+except ImportError:
+    Groq = None
+
+MODEL = "openai/gpt-oss-20b"
 MAX_SUGGESTIONS = 5
 
 
-def generate_ai_suggestions(
+def generate_rule_based_suggestions(
+    skills_matched: List[str], skills_missing: List[str]
+) -> List[str]:
+    matched_set = set(s.lower().strip() for s in skills_matched)
+    ranked = sorted(skills_missing, key=get_tier_weight, reverse=True)[:MAX_SUGGESTIONS]
+
+    suggestions = []
+    for skill in ranked:
+        cluster_id = CLUSTER_LOOKUP.get(skill.lower().strip())
+        related = None
+        if cluster_id is not None:
+            for c_skill in CONFIG["skillClusters"][cluster_id]:
+                if c_skill.lower().strip() in matched_set:
+                    related = c_skill
+                    break
+
+        if related:
+            suggestions.append(
+                f"Learn {skill} next - you already know {related}, a closely related "
+                f"skill, so this should be a fairly natural next step."
+            )
+        else:
+            suggestions.append(
+                f"Learn {skill} - it's one of the higher-priority skills this job is looking for."
+            )
+
+    return suggestions
+
+
+def generate_llm_suggestions(
     skills_matched: List[str], skills_missing: List[str], jd_text: str
-) -> Dict:
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-
-    if not api_key:
-        return {
-            "available": False,
-            "reason": "AI suggestions are not configured on this server.",
-            "suggestions": [],
-        }
-
-    if Anthropic is None:
-        return {
-            "available": False,
-            "reason": "The anthropic package is not installed.",
-            "suggestions": [],
-        }
-
-    if not skills_missing:
-        return {
-            "available": True,
-            "reason": None,
-            "suggestions": [],
-        }
+) -> List[str]:
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key or Groq is None:
+        return None
 
     prompt = f"""A candidate's resume is being compared against a job description.
 
@@ -50,33 +62,36 @@ this candidate should focus on learning first, and briefly why, based only on th
 above. Do not invent skills that are not in the missing list. Do not comment on resume formatting
 or wording. Respond with ONLY a JSON array of strings, no other text, no markdown fences."""
 
+    client = Groq(api_key=api_key)
+    response = client.chat.completions.create(
+        model=MODEL,
+        max_tokens=500,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    raw_text = response.choices[0].message.content
+    cleaned = raw_text.strip().strip("`").strip()
+    if cleaned.startswith("json"):
+        cleaned = cleaned[4:].strip()
+
+    suggestions = json.loads(cleaned)
+    if not isinstance(suggestions, list):
+        raise ValueError("Response was not a JSON array")
+
+    return suggestions[:MAX_SUGGESTIONS]
+
+
+def generate_ai_suggestions(
+    skills_matched: List[str], skills_missing: List[str], jd_text: str
+) -> Dict:
+    if not skills_missing:
+        return {"available": True, "source": "none", "suggestions": []}
+
     try:
-        client = Anthropic(api_key=api_key)
-        response = client.messages.create(
-            model=MODEL,
-            max_tokens=500,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        raw_text = "".join(
-            block.text for block in response.content if block.type == "text"
-        )
-        cleaned = raw_text.strip().strip("`").strip()
-        if cleaned.startswith("json"):
-            cleaned = cleaned[4:].strip()
+        llm_result = generate_llm_suggestions(skills_matched, skills_missing, jd_text)
+        if llm_result is not None:
+            return {"available": True, "source": "ai", "suggestions": llm_result}
+    except Exception:
+        pass
 
-        suggestions = json.loads(cleaned)
-        if not isinstance(suggestions, list):
-            raise ValueError("Response was not a JSON array")
-
-        return {
-            "available": True,
-            "reason": None,
-            "suggestions": suggestions[:MAX_SUGGESTIONS],
-        }
-
-    except Exception as e:
-        return {
-            "available": False,
-            "reason": f"AI suggestion generation failed: {e}",
-            "suggestions": [],
-        }
+    fallback = generate_rule_based_suggestions(skills_matched, skills_missing)
+    return {"available": True, "source": "rule-based", "suggestions": fallback}

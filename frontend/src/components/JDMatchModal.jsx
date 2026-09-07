@@ -49,6 +49,7 @@ export default function JDMatchModal({ isOpen, onClose, onMatchJD, history, onAd
         <div className="jdm-header">
           <div>
             <h2 className="jdm-title">Match Against a Job Description</h2>
+            <p className="jdm-subtitle">Paste a real posting to score this resume against it specifically</p>
           </div>
           <button className="jdm-close" onClick={onClose} aria-label="Close">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -154,20 +155,20 @@ export default function JDMatchModal({ isOpen, onClose, onMatchJD, history, onAd
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M7 1l1.2 3.8L12 6l-3.8 1.2L7 11l-1.2-3.8L2 6l3.8-1.2L7 1z" fill="currentColor" />
                   </svg>
-                  AI Suggestions
+                  {result.ai_suggestions.source === "ai" ? "AI Suggestions" : "Suggested Next Steps"}
+                  {result.ai_suggestions.source === "rule-based" && (
+                    <span className="jdm-ai-source-tag">Rule-based</span>
+                  )}
                 </p>
-                {result.ai_suggestions.available && result.ai_suggestions.suggestions.length > 0 && (
+                {result.ai_suggestions.suggestions.length > 0 && (
                   <ul className="jdm-ai-list">
                     {result.ai_suggestions.suggestions.map((s, i) => (
                       <li key={i}>{s}</li>
                     ))}
                   </ul>
                 )}
-                {result.ai_suggestions.available && result.ai_suggestions.suggestions.length === 0 && (
+                {result.ai_suggestions.suggestions.length === 0 && (
                   <p className="jdm-ai-empty">No specific gaps to flag - this resume already covers what the job description asks for.</p>
-                )}
-                {!result.ai_suggestions.available && (
-                  <p className="jdm-ai-empty">AI suggestions are currently unavailable.</p>
                 )}
               </div>
             </div>

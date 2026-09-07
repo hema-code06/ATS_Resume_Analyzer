@@ -13,7 +13,7 @@ function App() {
   const [resumeFile, setResumeFile] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/`).catch(() => {});
+    fetch(`${API_URL}/`).catch(() => { });
   }, []);
 
   const handleUpload = async (file) => {
@@ -79,9 +79,7 @@ function App() {
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(
-        err.detail || "Could not match against this job description",
-      );
+      throw new Error(err.detail || "Could not match against this job description");
     }
 
     return response.json();

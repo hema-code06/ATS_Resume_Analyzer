@@ -50,6 +50,11 @@
   margin: 0;
 }
 
+.jdm-subtitle {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+}
 
 .jdm-close {
   background: var(--color-bg);
@@ -317,6 +322,18 @@
   font-weight: 700;
   color: var(--color-primary);
   margin: 0 0 10px;
+}
+
+.jdm-ai-source-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .jdm-ai-list {
