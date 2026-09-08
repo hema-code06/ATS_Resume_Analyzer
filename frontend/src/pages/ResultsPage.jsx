@@ -322,7 +322,7 @@ export default function ResultsPage({
           disabled={isLoading}
           hidden
         />
-        <Tooltip text="Match Job Description">
+        <Tooltip text="Match Job Description" align="right">
           <button
             className="rp-bar-btn rp-bar-btn--icon rp-bar-btn--ghost"
             onClick={() => setIsJDModalOpen(true)}
