@@ -166,29 +166,6 @@
   box-shadow: 0 4px 12px rgba(67, 56, 202, 0.12);
 }
 
-.rp-bar-action {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.rp-bar-tt {
-  display: flex;
-  align-items: center;
-}
-
-.rp-bar-btn--ghost {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-}
-
-.rp-bar-btn--ghost:hover:not(:disabled) {
-  background: var(--color-primary-border);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.12);
-}
-
 .rp-bar-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
