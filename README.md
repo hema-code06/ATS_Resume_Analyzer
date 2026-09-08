@@ -35,7 +35,7 @@ Beyond the 40 built-in roles, you can paste any real job posting and get a custo
 
 - Skills are extracted from the pasted JD using the same regex-based engine used for resumes
 - The resume is scored against *that specific listing's* skill set, not a generic template
-- Suggestions on what to learn next come from a live LLM call (Groq) when configured, with an automatic fallback to rule-based suggestions — generated using the same skill-tier and skill-cluster data that powers the main matching engine — if no key is set or the call fails. The source is always labeled honestly in the response.
+- Suggestions on what to learn next come from a live LLM call (Groq) when configured, with an automatic fallback to rule-based suggestions — generated using the same skill-tier and skill-cluster data that powers the main matching engine. The source is always labeled honestly in the response.
 
 ## 🩺 ATS Formatting Check
 
