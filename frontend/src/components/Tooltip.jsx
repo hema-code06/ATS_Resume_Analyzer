@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./Tooltip.css";
 
-export default function Tooltip({ text, children }) {
+export default function Tooltip({ text, children, align = "center" }) {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -14,9 +14,9 @@ export default function Tooltip({ text, children }) {
     >
       {children}
       {visible && (
-        <span className="tt-bubble">
+        <span className={`tt-bubble tt-bubble--${align}`}>
           {text}
-          <span className="tt-arrow" />
+          <span className={`tt-arrow tt-arrow--${align}`} />
         </span>
       )}
     </span>

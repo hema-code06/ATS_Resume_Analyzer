@@ -329,42 +329,34 @@ export default function ResultsPage({
             disabled={isLoading}
             aria-label="Match Job Description"
           >
-            <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path
-                d="M3 1h6l3 3v9H3V1z"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinejoin="round"
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M9.25 2A1.75 1.75 0 007.5 3.75V5H4.75A2.75 2.75 0 002 7.75v7.65c1.9.85 4.5 1.4 7.15 1.55a6.47 6.47 0 011.13-8.9 6.5 6.5 0 018.72.62V7.75A2.75 2.75 0 0016.25 5H13.5V3.75A1.75 1.75 0 0011.75 2h-2.5zM9.5 5V3.75a.25.25 0 01.25-.25h2.5a.25.25 0 01.25.25V5h-3z"
               />
+              <path d="M2 16.95V18.25A2.75 2.75 0 004.75 21h6.5a6.47 6.47 0 01-1.9-4.3c-2.6-.1-5.1-.65-7.35-1.75z" />
               <path
-                d="M5 6h4M5 8.5h4M5 3.5h2"
-                stroke="currentColor"
-                strokeWidth="1.3"
-                strokeLinecap="round"
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M17.5 12a4.5 4.5 0 100 9 4.5 4.5 0 000-9zm-2.5 4.5a2.5 2.5 0 115 0 2.5 2.5 0 01-5 0z"
               />
+              <path d="M20.7 20.6a1 1 0 011.4 0l1.6 1.6a1 1 0 01-1.4 1.4l-1.6-1.6a1 1 0 010-1.4z" />
             </svg>
           </button>
         </Tooltip>
-        <Tooltip text="Upload New Resume">
+        <Tooltip text="Upload New Resume" align="right">
           <button
             className="rp-bar-btn rp-bar-btn--icon"
             onClick={() => fileInputRef.current?.click()}
             disabled={isLoading}
             aria-label="Upload New Resume"
           >
-            <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path
-                d="M7 9V2M7 2L4.5 4.5M7 2l2.5 2.5"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M2 10v1.5A.5.5 0 002.5 12h9a.5.5 0 00.5-.5V10"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M12.5 3a5.5 5.5 0 015.44 4.72A5 5 0 0117 17.5H7a5 5 0 01-1.15-9.86 3.5 3.5 0 015.9-3.9A5.47 5.47 0 0112.5 3zm-.85 4.4a.75.75 0 011.2 0l3.2 4.2a.75.75 0 01-.6 1.2h-1.7v3.2a.75.75 0 01-.75.75h-2a.75.75 0 01-.75-.75v-3.2H8.55a.75.75 0 01-.6-1.2l3.2-4.2z"
               />
             </svg>
           </button>
