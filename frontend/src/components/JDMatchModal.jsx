@@ -49,7 +49,6 @@ export default function JDMatchModal({ isOpen, onClose, onMatchJD, history, onAd
         <div className="jdm-header">
           <div>
             <h2 className="jdm-title">Match Against a Job Description</h2>
-            <p className="jdm-subtitle">Paste a real posting to score this resume against it specifically</p>
           </div>
           <button className="jdm-close" onClick={onClose} aria-label="Close">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
